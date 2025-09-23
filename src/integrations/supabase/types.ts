@@ -104,6 +104,42 @@ export type Database = {
         }
         Relationships: []
       }
+      location_tracks: {
+        Row: {
+          accuracy: number | null
+          address: string | null
+          created_at: string
+          id: string
+          latitude: number
+          location_name: string | null
+          longitude: number
+          timestamp: string
+          user_id: string
+        }
+        Insert: {
+          accuracy?: number | null
+          address?: string | null
+          created_at?: string
+          id?: string
+          latitude: number
+          location_name?: string | null
+          longitude: number
+          timestamp?: string
+          user_id: string
+        }
+        Update: {
+          accuracy?: number | null
+          address?: string | null
+          created_at?: string
+          id?: string
+          latitude?: number
+          location_name?: string | null
+          longitude?: number
+          timestamp?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       meal_photos: {
         Row: {
           ai_analyzed_nutrition: Json | null
@@ -874,6 +910,45 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      user_settings: {
+        Row: {
+          created_at: string
+          display_name: string | null
+          google_calendar_enabled: boolean | null
+          google_calendar_id: string | null
+          home_address: string | null
+          id: string
+          location_tracking_enabled: boolean | null
+          updated_at: string
+          user_id: string
+          work_address: string | null
+        }
+        Insert: {
+          created_at?: string
+          display_name?: string | null
+          google_calendar_enabled?: boolean | null
+          google_calendar_id?: string | null
+          home_address?: string | null
+          id?: string
+          location_tracking_enabled?: boolean | null
+          updated_at?: string
+          user_id: string
+          work_address?: string | null
+        }
+        Update: {
+          created_at?: string
+          display_name?: string | null
+          google_calendar_enabled?: boolean | null
+          google_calendar_id?: string | null
+          home_address?: string | null
+          id?: string
+          location_tracking_enabled?: boolean | null
+          updated_at?: string
+          user_id?: string
+          work_address?: string | null
+        }
+        Relationships: []
       }
       work_schedules: {
         Row: {
