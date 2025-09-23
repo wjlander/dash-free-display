@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { 
@@ -9,8 +9,13 @@ import {
   Upload, 
   Monitor,
   Palette,
-  RotateCcw
+  RotateCcw,
+  LogOut,
+  User
 } from 'lucide-react';
+import { useAuth } from '@/hooks/useAuth';
+import { useToast } from '@/hooks/use-toast';
+import { SettingsDialog } from './SettingsDialog';
 
 interface DashboardControlsProps {
   editMode: boolean;
@@ -27,6 +32,20 @@ export const DashboardControls: React.FC<DashboardControlsProps> = ({
   onExportConfig,
   onImportConfig
 }) => {
+  const [showSettings, setShowSettings] = useState(false);
+  const { user, signOut } = useAuth();
+  const { toast } = useToast();
+
+  const handleSignOut = async () => {
+    const { error } = await signOut();
+    if (error) {
+      toast({
+        title: "Error signing out",
+        description: error.message,
+        variant: "destructive"
+      });
+    }
+  };
   return (
     <Card className="m-4 mb-0 bg-gradient-glass border-widget-border shadow-widget backdrop-blur-sm">
       <div className="p-4">
@@ -92,14 +111,25 @@ export const DashboardControls: React.FC<DashboardControlsProps> = ({
             <Button
               variant="ghost"
               size="sm"
+              onClick={() => setShowSettings(true)}
               className="transition-all duration-200"
             >
               <Settings className="w-4 h-4" />
             </Button>
+
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={handleSignOut}
+              className="transition-all duration-200"
+              title="Sign out"
+            >
+              <LogOut className="w-4 h-4" />
+            </Button>
           </div>
         </div>
 
-        {/* Mobile controls */}
+        {/* User info and mobile controls */}
         <div className="md:hidden mt-4 flex flex-wrap gap-2">
           <Button
             variant={editMode ? "default" : "outline"}
