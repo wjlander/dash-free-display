@@ -1,14 +1,8 @@
 import React, { useState } from 'react';
-import { ClockWidget } from './widgets/ClockWidget';
-import { WeatherWidget } from './widgets/WeatherWidget';
-import { CalendarWidget } from './widgets/CalendarWidget';
-import { NewsWidget } from './widgets/NewsWidget';
-import { PhotoWidget } from './widgets/PhotoWidget';
-import { LocationWidget } from './widgets/LocationWidget';
-import { GoogleCalendarWidget } from './widgets/GoogleCalendarWidget';
 import { DashboardControls } from './DashboardControls';
 import { LayoutBuilder } from './LayoutBuilder';
-import { useCurrentTime } from '@/hooks/useCurrentTime';
+import { DynamicDashboard } from './DynamicDashboard';
+import { ClockWidget, WeatherWidget, CalendarWidget, NewsWidget, PhotoWidget } from './widgets';
 
 interface DashboardProps {
   screenId?: string;
@@ -17,7 +11,6 @@ interface DashboardProps {
 export const Dashboard: React.FC<DashboardProps> = ({ screenId = 'default' }) => {
   const [editMode, setEditMode] = useState(false);
   const [fullscreen, setFullscreen] = useState(false);
-  const currentTime = useCurrentTime();
 
   const toggleEditMode = () => {
     setEditMode(!editMode);
@@ -66,38 +59,7 @@ export const Dashboard: React.FC<DashboardProps> = ({ screenId = 'default' }) =>
             onCancel={() => setEditMode(false)}
           />
         ) : (
-          <div className="flex gap-6 h-full">
-            {/* Left Sidebar - Date, Time, Location */}
-            <div className="w-80 flex flex-col gap-6">
-              {/* Current Date & Time */}
-              <div className="bg-gradient-glass border-widget-border shadow-widget backdrop-blur-sm rounded-lg p-6">
-                <div className="text-6xl font-bold text-foreground mb-2">
-                  {currentTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false })}
-                </div>
-                <div className="text-2xl font-medium text-primary mb-1">
-                  {currentTime.toLocaleDateString('en-US', { weekday: 'long' })} {currentTime.getDate()}
-                </div>
-                <div className="text-lg text-muted-foreground">
-                  {currentTime.toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}
-                </div>
-              </div>
-
-              {/* Location Widget */}
-              <LocationWidget />
-              
-              {/* Weather Widget */}
-              <WeatherWidget 
-                location="New York"
-                showDetails={true}
-                title="Weather"
-              />
-            </div>
-
-            {/* Main Calendar Area */}
-            <div className="flex-1">
-              <GoogleCalendarWidget title="Calendar" />
-            </div>
-          </div>
+          <DynamicDashboard editMode={editMode} />
         )}
       </div>
 

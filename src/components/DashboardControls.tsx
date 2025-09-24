@@ -15,7 +15,7 @@ import {
 } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
 import { useToast } from '@/hooks/use-toast';
-import { SettingsDialog } from './SettingsDialog';
+import { EnhancedSettingsDialog } from './EnhancedSettingsDialog';
 
 interface DashboardControlsProps {
   editMode: boolean;
@@ -184,7 +184,7 @@ export const DashboardControls: React.FC<DashboardControlsProps> = ({
         </div>
       </div>
       
-      <SettingsDialog 
+      <EnhancedSettingsDialog 
         open={showSettings} 
         onOpenChange={setShowSettings} 
       />

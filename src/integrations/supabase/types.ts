@@ -44,6 +44,36 @@ export type Database = {
         }
         Relationships: []
       }
+      dashboard_layouts: {
+        Row: {
+          created_at: string
+          id: string
+          is_active: boolean
+          layout_data: Json
+          layout_name: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          layout_data?: Json
+          layout_name?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          layout_data?: Json
+          layout_name?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       food_items: {
         Row: {
           barcode: string | null
@@ -920,8 +950,11 @@ export type Database = {
           home_address: string | null
           id: string
           location_tracking_enabled: boolean | null
+          theme_variant: string | null
           updated_at: string
           user_id: string
+          visible_widgets: Json | null
+          widget_order: Json | null
           work_address: string | null
         }
         Insert: {
@@ -932,8 +965,11 @@ export type Database = {
           home_address?: string | null
           id?: string
           location_tracking_enabled?: boolean | null
+          theme_variant?: string | null
           updated_at?: string
           user_id: string
+          visible_widgets?: Json | null
+          widget_order?: Json | null
           work_address?: string | null
         }
         Update: {
@@ -944,8 +980,11 @@ export type Database = {
           home_address?: string | null
           id?: string
           location_tracking_enabled?: boolean | null
+          theme_variant?: string | null
           updated_at?: string
           user_id?: string
+          visible_widgets?: Json | null
+          widget_order?: Json | null
           work_address?: string | null
         }
         Relationships: []

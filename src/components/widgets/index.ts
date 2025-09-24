@@ -5,3 +5,6 @@ export { NewsWidget } from './NewsWidget';
 export { PhotoWidget } from './PhotoWidget';
 export { LocationWidget } from './LocationWidget';
 export { GoogleCalendarWidget } from './GoogleCalendarWidget';
+export { TodoWidget } from './TodoWidget';
+export { NotesWidget } from './NotesWidget';
+export { SystemStatsWidget } from './SystemStatsWidget';
