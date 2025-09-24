@@ -1,8 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Calendar as CalendarIcon, Clock, MapPin, Plus, Settings } from 'lucide-react';
+import { Calendar as CalendarIcon, Clock, MapPin, Plus, Settings, RefreshCw } from 'lucide-react';
 import { format, startOfMonth, endOfMonth, eachDayOfInterval, isSameMonth, isSameDay, addMonths, subMonths, isToday } from 'date-fns';
+import { supabase } from '@/integrations/supabase/client';
+import { useToast } from '@/hooks/use-toast';
+import { useAuth } from '@/hooks/useAuth';
 
 interface GoogleCalendarWidgetProps {
   title?: string;
@@ -20,39 +23,99 @@ interface CalendarEvent {
 
 export const GoogleCalendarWidget: React.FC<GoogleCalendarWidgetProps> = ({ title = "Calendar" }) => {
   const [currentDate, setCurrentDate] = useState(new Date());
-  const [events] = useState<CalendarEvent[]>([
-    // Demo events - replace with Google Calendar API integration
-    {
-      id: '1',
-      title: 'Shift at Staff',
-      start: new Date(2025, 8, 23, 9, 0), // Sep 23, 2025, 9:00 AM
-      end: new Date(2025, 8, 23, 17, 0),
-      location: 'Remote Development at PCC',
-      color: 'bg-orange-500'
-    },
-    {
-      id: '2',
-      title: 'Council list due',
-      start: new Date(2025, 8, 25, 10, 0),
-      end: new Date(2025, 8, 25, 11, 0),
-      color: 'bg-red-500'
-    },
-    {
-      id: '3',
-      title: 'Shift at Staff',
-      start: new Date(2025, 8, 26, 9, 0),
-      end: new Date(2025, 8, 26, 17, 0),
-      location: 'Remote Development at PCC',
-      color: 'bg-orange-500'
-    },
-    {
-      id: '4',
-      title: 'Charlie training and trip',
-      start: new Date(2025, 8, 15, 14, 0),
-      end: new Date(2025, 8, 15, 16, 0),
-      color: 'bg-purple-500'
+  const [events, setEvents] = useState<CalendarEvent[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [userSettings, setUserSettings] = useState<any>(null);
+  const { user } = useAuth();
+  const { toast } = useToast();
+
+  useEffect(() => {
+    if (user) {
+      loadUserSettings();
     }
-  ]);
+  }, [user]);
+
+  useEffect(() => {
+    if (userSettings?.google_calendar_enabled && userSettings?.google_calendar_id) {
+      fetchCalendarEvents();
+    } else {
+      // Show demo events if not configured
+      setEvents([
+        {
+          id: '1',
+          title: 'Shift at Staff',
+          start: new Date(2025, 8, 23, 9, 0),
+          end: new Date(2025, 8, 23, 17, 0),
+          location: 'Remote Development at PCC',
+          color: 'bg-orange-500'
+        },
+        {
+          id: '2',
+          title: 'Council list due',
+          start: new Date(2025, 8, 25, 10, 0),
+          end: new Date(2025, 8, 25, 11, 0),
+          color: 'bg-red-500'
+        },
+        {
+          id: '3',
+          title: 'Charlie training and trip',
+          start: new Date(2025, 8, 15, 14, 0),
+          end: new Date(2025, 8, 15, 16, 0),
+          color: 'bg-purple-500'
+        }
+      ]);
+    }
+  }, [userSettings]);
+
+  const loadUserSettings = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('user_settings')
+        .select('*')
+        .eq('user_id', user!.id)
+        .single();
+
+      if (data) {
+        setUserSettings(data);
+      }
+    } catch (error) {
+      console.error('Error loading user settings:', error);
+    }
+  };
+
+  const fetchCalendarEvents = async () => {
+    if (!userSettings?.google_calendar_id) return;
+
+    setIsLoading(true);
+    try {
+      const { data, error } = await supabase.functions.invoke('google-calendar-events', {
+        body: { calendarId: userSettings.google_calendar_id }
+      });
+
+      if (error) throw error;
+
+      const formattedEvents = data.events.map((event: any) => ({
+        ...event,
+        start: new Date(event.start),
+        end: new Date(event.end)
+      }));
+
+      setEvents(formattedEvents);
+      toast({
+        title: "Calendar synced",
+        description: `Loaded ${formattedEvents.length} events from Google Calendar`
+      });
+    } catch (error: any) {
+      console.error('Error fetching calendar events:', error);
+      toast({
+        title: "Calendar sync failed",
+        description: error.message || "Could not sync with Google Calendar",
+        variant: "destructive"
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   const monthStart = startOfMonth(currentDate);
   const monthEnd = endOfMonth(currentDate);
@@ -102,11 +165,18 @@ export const GoogleCalendarWidget: React.FC<GoogleCalendarWidgetProps> = ({ titl
           </h3>
           
           <div className="flex items-center gap-2">
+            {userSettings?.google_calendar_enabled && (
+              <Button 
+                variant="ghost" 
+                size="sm" 
+                onClick={fetchCalendarEvents}
+                disabled={isLoading}
+              >
+                <RefreshCw className={`w-4 h-4 ${isLoading ? 'animate-spin' : ''}`} />
+              </Button>
+            )}
             <Button variant="ghost" size="sm">
               <Plus className="w-4 h-4" />
-            </Button>
-            <Button variant="ghost" size="sm">
-              <Settings className="w-4 h-4" />
             </Button>
           </div>
         </div>
@@ -176,6 +246,9 @@ export const GoogleCalendarWidget: React.FC<GoogleCalendarWidgetProps> = ({ titl
           <h5 className="text-sm font-medium text-foreground mb-2 flex items-center gap-2">
             <Clock className="w-4 h-4" />
             Today's Events
+            {!userSettings?.google_calendar_enabled && (
+              <span className="text-xs text-muted-foreground">(Demo)</span>
+            )}
           </h5>
           
           {getEventsForDay(new Date()).length > 0 ? (
@@ -199,7 +272,14 @@ export const GoogleCalendarWidget: React.FC<GoogleCalendarWidgetProps> = ({ titl
               ))}
             </div>
           ) : (
-            <p className="text-sm text-muted-foreground">No events today</p>
+            <div className="text-center py-2">
+              <p className="text-sm text-muted-foreground mb-2">No events today</p>
+              {!userSettings?.google_calendar_enabled && (
+                <p className="text-xs text-muted-foreground">
+                  Enable Google Calendar in settings to sync real events
+                </p>
+              )}
+            </div>
           )}
         </div>
       </div>
