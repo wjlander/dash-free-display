@@ -207,11 +207,11 @@ export const GoogleCalendarWidget: React.FC<GoogleCalendarWidgetProps> = ({ titl
 
         {/* Calendar Grid */}
         <div className="grid grid-cols-7 gap-1">
-          {daysInMonth.map((day) => {
+          {daysInMonth.map((day, index) => {
             const dayEvents = getEventsForDay(day);
             
             return (
-              <div key={day.toISOString()} className={getDayClass(day)}>
+              <div key={`${day.toISOString()}-${index}`} className={getDayClass(day)}>
                 <div className="font-medium mb-1">
                   {format(day, 'd')}
                   {isToday(day) && (
@@ -220,9 +220,9 @@ export const GoogleCalendarWidget: React.FC<GoogleCalendarWidgetProps> = ({ titl
                 </div>
                 
                 <div className="space-y-1">
-                  {dayEvents.slice(0, 3).map((event) => (
+                  {dayEvents.slice(0, 3).map((event, eventIndex) => (
                     <div
-                      key={event.id}
+                      key={`${event.id}-${eventIndex}`}
                       className={`text-xs p-1 rounded text-white truncate ${event.color || 'bg-primary'}`}
                       title={`${event.title} - ${format(event.start, 'HH:mm')}`}
                     >

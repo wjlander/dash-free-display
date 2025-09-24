@@ -183,6 +183,11 @@ export const DashboardControls: React.FC<DashboardControlsProps> = ({
           </div>
         </div>
       </div>
+      
+      <SettingsDialog 
+        open={showSettings} 
+        onOpenChange={setShowSettings} 
+      />
     </Card>
   );
 };
