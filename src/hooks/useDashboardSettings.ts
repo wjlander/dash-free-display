@@ -65,19 +65,42 @@ export const useDashboardSettings = () => {
           display_name: user.user_metadata?.full_name || user.email?.split('@')[0] || 'User'
         };
         
-        const { data: newSettings, error: insertError } = await supabase
-          .from('user_settings')
-          .insert(defaultSettings)
-          .select()
-          .single();
+        try {
+          const { data: newSettings, error: insertError } = await supabase
+            .from('user_settings')
+            .insert(defaultSettings)
+            .select()
+            .single();
 
-        if (insertError) throw insertError;
-        const formattedNewSettings = {
-          ...newSettings,
-          visible_widgets: Array.isArray(newSettings.visible_widgets) ? newSettings.visible_widgets as string[] : ['clock', 'weather', 'calendar', 'location'],
-          widget_order: Array.isArray(newSettings.widget_order) ? newSettings.widget_order as string[] : []
-        };
-        setSettings(formattedNewSettings);
+          if (insertError) throw insertError;
+          const formattedNewSettings = {
+            ...newSettings,
+            visible_widgets: Array.isArray(newSettings.visible_widgets) ? newSettings.visible_widgets as string[] : ['clock', 'weather', 'calendar', 'location'],
+            widget_order: Array.isArray(newSettings.widget_order) ? newSettings.widget_order as string[] : []
+          };
+          setSettings(formattedNewSettings);
+        } catch (insertError: any) {
+          // If insert fails due to duplicate key (race condition), retry fetching
+          if (insertError.code === '23505') {
+            const { data: retryData, error: retryError } = await supabase
+              .from('user_settings')
+              .select('*')
+              .eq('user_id', user.id)
+              .single();
+
+            if (retryError) throw retryError;
+            if (retryData) {
+              const formattedRetrySettings = {
+                ...retryData,
+                visible_widgets: Array.isArray(retryData.visible_widgets) ? retryData.visible_widgets as string[] : ['clock', 'weather', 'calendar', 'location'],
+                widget_order: Array.isArray(retryData.widget_order) ? retryData.widget_order as string[] : []
+              };
+              setSettings(formattedRetrySettings);
+            }
+          } else {
+            throw insertError;
+          }
+        }
       } else if (data) {
         // Ensure arrays are properly typed
         const formattedSettings = {

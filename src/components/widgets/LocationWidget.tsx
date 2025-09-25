@@ -4,9 +4,11 @@ import { Button } from '@/components/ui/button';
 import { MapPin, Navigation, Home, Building2, AlertCircle } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
+import { DashboardSettings } from '@/hooks/useDashboardSettings';
 
 interface LocationWidgetProps {
   title?: string;
+  settings?: DashboardSettings;
 }
 
 interface LocationData {
@@ -18,47 +20,14 @@ interface LocationData {
   timestamp: string;
 }
 
-export const LocationWidget: React.FC<LocationWidgetProps> = ({ title = "Location" }) => {
+export const LocationWidget: React.FC<LocationWidgetProps> = ({ title = "Location", settings }) => {
   const [currentLocation, setCurrentLocation] = useState<LocationData | null>(null);
   const [isTracking, setIsTracking] = useState(false);
-  const [userSettings, setUserSettings] = useState<any>(null);
   const { toast } = useToast();
 
   useEffect(() => {
-    loadUserSettings();
     loadLatestLocation();
   }, []);
-
-  const loadUserSettings = async () => {
-    try {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return;
-
-      const { data, error } = await supabase
-        .from('user_settings')
-        .select('*')
-        .eq('user_id', user.id)
-        .single();
-
-      if (error && error.code === 'PGRST116') {
-        // Create default settings
-        const { data: newSettings } = await supabase
-          .from('user_settings')
-          .insert({
-            user_id: user.id,
-            location_tracking_enabled: false,
-            display_name: user.user_metadata?.full_name || 'User'
-          })
-          .select()
-          .single();
-        setUserSettings(newSettings);
-      } else if (data) {
-        setUserSettings(data);
-      }
-    } catch (error) {
-      console.error('Error loading user settings:', error);
-    }
-  };
 
   const loadLatestLocation = async () => {
     try {
@@ -110,7 +79,7 @@ export const LocationWidget: React.FC<LocationWidgetProps> = ({ title = "Locatio
   };
 
   const determineLocationName = async (address: string, lat: number, lng: number): Promise<string> => {
-    if (!userSettings) return 'Unknown Location';
+    if (!settings) return 'Unknown Location';
 
     // Simple distance calculation to determine if at home/work
     const calculateDistance = (lat1: number, lng1: number, lat2: number, lng2: number) => {
@@ -136,7 +105,7 @@ export const LocationWidget: React.FC<LocationWidgetProps> = ({ title = "Locatio
   };
 
   const trackLocation = async () => {
-    if (!userSettings?.location_tracking_enabled) {
+    if (!settings?.location_tracking_enabled) {
       toast({
         title: "Location tracking disabled",
         description: "Enable location tracking in settings to use this feature.",
@@ -187,29 +156,6 @@ export const LocationWidget: React.FC<LocationWidgetProps> = ({ title = "Locatio
     }
   };
 
-  const toggleLocationTracking = async () => {
-    try {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return;
-
-      const newEnabled = !userSettings?.location_tracking_enabled;
-      const { error } = await supabase
-        .from('user_settings')
-        .update({ location_tracking_enabled: newEnabled })
-        .eq('user_id', user.id);
-
-      if (error) throw error;
-
-      setUserSettings(prev => ({ ...prev, location_tracking_enabled: newEnabled }));
-      
-      if (newEnabled) {
-        trackLocation();
-      }
-    } catch (error) {
-      console.error('Error toggling location tracking:', error);
-    }
-  };
-
   const getLocationIcon = () => {
     if (!currentLocation) return <MapPin className="w-5 h-5" />;
     
@@ -229,14 +175,6 @@ export const LocationWidget: React.FC<LocationWidgetProps> = ({ title = "Locatio
             {getLocationIcon()}
             {title}
           </h3>
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={toggleLocationTracking}
-            className={userSettings?.location_tracking_enabled ? "text-primary" : "text-muted-foreground"}
-          >
-            <Navigation className="w-4 h-4" />
-          </Button>
         </div>
 
         <div className="space-y-4">
@@ -244,7 +182,7 @@ export const LocationWidget: React.FC<LocationWidgetProps> = ({ title = "Locatio
             <div className="space-y-2">
               <div className="flex items-center gap-2">
                 <span className="text-2xl font-bold text-foreground">
-                  {userSettings?.display_name || 'User'}
+                  {settings?.display_name || 'User'}
                 </span>
               </div>
               
@@ -273,7 +211,7 @@ export const LocationWidget: React.FC<LocationWidgetProps> = ({ title = "Locatio
               </p>
               <Button
                 onClick={trackLocation}
-                disabled={isTracking || !userSettings?.location_tracking_enabled}
+                disabled={isTracking || !settings?.location_tracking_enabled}
                 size="sm"
               >
                 {isTracking ? 'Getting location...' : 'Get location'}
@@ -281,7 +219,7 @@ export const LocationWidget: React.FC<LocationWidgetProps> = ({ title = "Locatio
             </div>
           )}
 
-          {userSettings?.location_tracking_enabled && (
+          {settings?.location_tracking_enabled && (
             <Button
               onClick={trackLocation}
               disabled={isTracking}

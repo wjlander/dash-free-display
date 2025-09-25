@@ -66,7 +66,7 @@ export const DynamicDashboard: React.FC<DynamicDashboardProps> = ({ editMode }) 
         </div>
 
         {/* Conditional widgets based on settings */}
-        {visibleWidgets.includes('location') && <LocationWidget />}
+        {visibleWidgets.includes('location') && <LocationWidget settings={settings} />}
         {visibleWidgets.includes('weather') && (
           <WeatherWidget 
             location="New York"
