@@ -3,6 +3,7 @@ import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { 
   Edit3, 
+  Move,
   Maximize, 
   Settings, 
   Download, 
@@ -20,6 +21,7 @@ import { EnhancedSettingsDialog } from './EnhancedSettingsDialog';
 interface DashboardControlsProps {
   editMode: boolean;
   onToggleEdit: () => void;
+  onToggleVisualEdit?: () => void;
   onToggleFullscreen: () => void;
   onExportConfig: () => void;
   onImportConfig: () => void;
@@ -28,6 +30,7 @@ interface DashboardControlsProps {
 export const DashboardControls: React.FC<DashboardControlsProps> = ({
   editMode,
   onToggleEdit,
+  onToggleVisualEdit,
   onToggleFullscreen,
   onExportConfig,
   onImportConfig
@@ -74,6 +77,18 @@ export const DashboardControls: React.FC<DashboardControlsProps> = ({
               <Edit3 className="w-4 h-4 mr-2" />
               {editMode ? 'Exit Edit' : 'Edit Layout'}
             </Button>
+
+            {onToggleVisualEdit && (
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={onToggleVisualEdit}
+                className="transition-all duration-200"
+              >
+                <Move className="w-4 h-4 mr-2" />
+                Visual Edit
+              </Button>
+            )}
 
             <Button
               variant="outline"

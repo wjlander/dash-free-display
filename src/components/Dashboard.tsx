@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { DashboardControls } from './DashboardControls';
 import { LayoutBuilder } from './LayoutBuilder';
 import { DynamicDashboard } from './DynamicDashboard';
+import { VisualDashboard } from './VisualDashboard';
 import { ClockWidget, WeatherWidget, CalendarWidget, NewsWidget, PhotoWidget } from './widgets';
 
 interface DashboardProps {
@@ -10,10 +11,17 @@ interface DashboardProps {
 
 export const Dashboard: React.FC<DashboardProps> = ({ screenId = 'default' }) => {
   const [editMode, setEditMode] = useState(false);
+  const [visualEditMode, setVisualEditMode] = useState(false);
   const [fullscreen, setFullscreen] = useState(false);
 
   const toggleEditMode = () => {
     setEditMode(!editMode);
+    setVisualEditMode(false);
+  };
+
+  const toggleVisualEditMode = () => {
+    setVisualEditMode(!visualEditMode);
+    setEditMode(false);
   };
 
   const toggleFullscreen = () => {
@@ -37,10 +45,11 @@ export const Dashboard: React.FC<DashboardProps> = ({ screenId = 'default' }) =>
   return (
     <div className="min-h-screen bg-dashboard-bg">
       {/* Dashboard Controls */}
-      {!fullscreen && (
+      {!fullscreen && !visualEditMode && (
         <DashboardControls
           editMode={editMode}
           onToggleEdit={toggleEditMode}
+          onToggleVisualEdit={toggleVisualEditMode}
           onToggleFullscreen={toggleFullscreen}
           onExportConfig={() => console.log('Export config')}
           onImportConfig={() => console.log('Import config')}
@@ -48,20 +57,27 @@ export const Dashboard: React.FC<DashboardProps> = ({ screenId = 'default' }) =>
       )}
 
       {/* Main Dashboard Content */}
-      <div className={`${fullscreen ? 'p-4' : 'p-6'} transition-all duration-300`}>
-        {editMode ? (
-          <LayoutBuilder 
-            layout={defaultLayout}
-            onSave={(newLayout) => {
-              console.log('Save layout:', newLayout);
-              setEditMode(false);
-            }}
-            onCancel={() => setEditMode(false)}
-          />
-        ) : (
-          <DynamicDashboard editMode={editMode} />
-        )}
-      </div>
+      {visualEditMode ? (
+        <VisualDashboard 
+          editMode={visualEditMode} 
+          onExitEdit={() => setVisualEditMode(false)}
+        />
+      ) : (
+        <div className={`${fullscreen ? 'p-4' : 'p-6'} transition-all duration-300`}>
+          {editMode ? (
+            <LayoutBuilder 
+              layout={defaultLayout}
+              onSave={(newLayout) => {
+                console.log('Save layout:', newLayout);
+                setEditMode(false);
+              }}
+              onCancel={() => setEditMode(false)}
+            />
+          ) : (
+            <DynamicDashboard editMode={editMode} />
+          )}
+        </div>
+      )}
 
       {/* Footer with system info (hidden in fullscreen) */}
       {!fullscreen && (
