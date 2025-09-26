@@ -1,20 +1,7 @@
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
-import { 
-  Edit3, 
-  Move,
-  Maximize, 
-  Settings, 
-  Download, 
-  Upload, 
-  Monitor,
-  Palette,
-  RotateCcw,
-  LogOut,
-  User,
-  Layers
-} from 'lucide-react';
+import { CreditCard as Edit3, Move, Maximize, Settings, Download, Upload, Monitor, Palette, RotateCcw, LogOut, User, Layers } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
 import { useToast } from '@/hooks/use-toast';
 import { useScreens } from '@/hooks/useScreens';

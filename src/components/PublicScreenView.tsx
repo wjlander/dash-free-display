@@ -12,7 +12,7 @@ import {
   SystemStatsWidget
 } from './widgets';
 import { Card } from './ui/card';
-import { AlertCircle, Monitor } from 'lucide-react';
+import { CircleAlert as AlertCircle, Monitor } from 'lucide-react';
 
 const WIDGET_COMPONENTS = {
   clock: ClockWidget,

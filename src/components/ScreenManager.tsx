@@ -6,18 +6,7 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { 
-  Monitor, 
-  Plus, 
-  Edit3, 
-  Trash2, 
-  Eye, 
-  EyeOff, 
-  Copy, 
-  ExternalLink,
-  Settings,
-  Globe
-} from 'lucide-react';
+import { Monitor, Plus, CreditCard as Edit3, Trash2, Eye, EyeOff, Copy, ExternalLink, Settings, Globe } from 'lucide-react';
 import { useScreens } from '@/hooks/useScreens';
 import { DashboardScreen } from '@/types/screen';
 
