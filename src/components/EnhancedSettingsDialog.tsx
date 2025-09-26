@@ -9,7 +9,9 @@ import { Card } from '@/components/ui/card';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Settings, Calendar, MapPin, Monitor, Palette, Clock, Cloud, CheckSquare, FileText, Activity, Eye, EyeOff, Trash2, Save } from 'lucide-react';
+import { Home } from 'lucide-react';
 import { useDashboardSettings } from '@/hooks/useDashboardSettings';
+import { HomeAssistantSetup } from './HomeAssistantSetup';
 
 interface EnhancedSettingsDialogProps {
   open: boolean;
@@ -21,6 +23,7 @@ const AVAILABLE_WIDGETS = [
   { id: 'weather', name: 'Weather', icon: Cloud, description: 'Local weather information' },
   { id: 'calendar', name: 'Google Calendar', icon: Calendar, description: 'Your calendar events' },
   { id: 'location', name: 'Location', icon: MapPin, description: 'Current location tracking' },
+  { id: 'homeassistant', name: 'Home Assistant', icon: Home, description: 'Smart home device control' },
   { id: 'todo', name: 'Tasks', icon: CheckSquare, description: 'Quick task management' },
   { id: 'notes', name: 'Notes', icon: FileText, description: 'Quick notes and reminders' },
   { id: 'system', name: 'System Stats', icon: Activity, description: 'System performance metrics' }
@@ -36,6 +39,7 @@ const THEME_VARIANTS = [
 export const EnhancedSettingsDialog: React.FC<EnhancedSettingsDialogProps> = ({ open, onOpenChange }) => {
   const { settings, layouts, loading, updateSettings, saveLayout, loadLayout, deleteLayout } = useDashboardSettings();
   const [newLayoutName, setNewLayoutName] = useState('');
+  const [showHomeAssistantSetup, setShowHomeAssistantSetup] = useState(false);
 
   const toggleWidget = (widgetId: string) => {
     const currentWidgets = settings.visible_widgets || [];
@@ -72,7 +76,7 @@ export const EnhancedSettingsDialog: React.FC<EnhancedSettingsDialogProps> = ({ 
         </DialogHeader>
 
         <Tabs defaultValue="widgets" className="w-full">
-          <TabsList className="grid w-full grid-cols-5">
+          <TabsList className="grid w-full grid-cols-6">
             <TabsTrigger value="widgets">
               <Eye className="w-4 h-4 mr-2" />
               Widgets
@@ -88,6 +92,10 @@ export const EnhancedSettingsDialog: React.FC<EnhancedSettingsDialogProps> = ({ 
             <TabsTrigger value="location">
               <MapPin className="w-4 h-4 mr-2" />
               Location
+            </TabsTrigger>
+            <TabsTrigger value="homeassistant">
+              <Home className="w-4 h-4 mr-2" />
+              Home Assistant
             </TabsTrigger>
             <TabsTrigger value="appearance">
               <Palette className="w-4 h-4 mr-2" />
@@ -284,6 +292,38 @@ export const EnhancedSettingsDialog: React.FC<EnhancedSettingsDialogProps> = ({ 
             </Card>
           </TabsContent>
 
+          {/* Home Assistant Settings */}
+          <TabsContent value="homeassistant" className="space-y-4">
+            <Card className="p-4 bg-widget-bg border-widget-border">
+              <h3 className="text-lg font-semibold text-foreground mb-4">Home Assistant Integration</h3>
+              
+              <div className="space-y-4">
+                <div className="flex items-center justify-between">
+                  <div className="space-y-0.5">
+                    <Label className="text-base">Connect Home Assistant</Label>
+                    <p className="text-sm text-muted-foreground">
+                      Control your smart home devices from the dashboard
+                    </p>
+                  </div>
+                  <Button onClick={() => setShowHomeAssistantSetup(true)}>
+                    Setup
+                  </Button>
+                </div>
+
+                <div className="p-3 bg-muted/30 rounded-lg">
+                  <h4 className="font-medium text-sm mb-2">Features:</h4>
+                  <ul className="text-xs text-muted-foreground space-y-1">
+                    <li>• Control lights, switches, and other devices</li>
+                    <li>• View sensor data and states</li>
+                    <li>• Real-time synchronization via WebSocket</li>
+                    <li>• Support for both local and cloud instances</li>
+                    <li>• Drag-and-drop widget management</li>
+                  </ul>
+                </div>
+              </div>
+            </Card>
+          </TabsContent>
+
           {/* Theme Settings */}
           <TabsContent value="appearance" className="space-y-4">
             <Card className="p-4 bg-widget-bg border-widget-border">
@@ -338,6 +378,11 @@ export const EnhancedSettingsDialog: React.FC<EnhancedSettingsDialogProps> = ({ 
           </Button>
         </div>
       </DialogContent>
+      
+      <HomeAssistantSetup 
+        open={showHomeAssistantSetup} 
+        onOpenChange={setShowHomeAssistantSetup} 
+      />
     </Dialog>
   );
 };

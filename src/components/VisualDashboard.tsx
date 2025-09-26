@@ -8,6 +8,7 @@ import {
   WeatherWidget, 
   GoogleCalendarWidget, 
   LocationWidget,
+  HomeAssistantWidget,
   TodoWidget,
   NotesWidget,
   SystemStatsWidget
@@ -44,6 +45,7 @@ const WIDGET_COMPONENTS = {
   weather: WeatherWidget,
   calendar: GoogleCalendarWidget,
   location: LocationWidget,
+  homeassistant: HomeAssistantWidget,
   todo: TodoWidget,
   notes: NotesWidget,
   system: SystemStatsWidget
@@ -54,6 +56,7 @@ const DEFAULT_WIDGET_CONFIGS: Record<string, Omit<WidgetConfig, 'position'>> = {
   weather: { id: 'weather', type: 'weather', size: { width: 300, height: 250 } },
   calendar: { id: 'calendar', type: 'calendar', size: { width: 600, height: 400 } },
   location: { id: 'location', type: 'location', size: { width: 280, height: 150 } },
+  homeassistant: { id: 'homeassistant', type: 'homeassistant', size: { width: 350, height: 300 } },
   todo: { id: 'todo', type: 'todo', size: { width: 350, height: 300 } },
   notes: { id: 'notes', type: 'notes', size: { width: 350, height: 250 } },
   system: { id: 'system', type: 'system', size: { width: 300, height: 200 } }

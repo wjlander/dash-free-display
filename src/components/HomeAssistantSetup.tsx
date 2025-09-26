@@ -6,7 +6,7 @@ import { Label } from '@/components/ui/label';
 import { Card } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { Home, Cloud, Wifi, Key, ExternalLink, CheckCircle, AlertCircle } from 'lucide-react';
+import { Chrome as Home, Cloud, Wifi, Key, ExternalLink, CircleCheck as CheckCircle, CircleAlert as AlertCircle } from 'lucide-react';
 import { useHomeAssistant } from '@/hooks/useHomeAssistant';
 
 interface HomeAssistantSetupProps {

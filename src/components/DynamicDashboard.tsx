@@ -6,6 +6,7 @@ import {
   WeatherWidget, 
   GoogleCalendarWidget, 
   LocationWidget,
+  HomeAssistantWidget,
   TodoWidget,
   NotesWidget,
   SystemStatsWidget
@@ -21,6 +22,7 @@ const WIDGET_COMPONENTS = {
   weather: WeatherWidget,
   calendar: GoogleCalendarWidget,
   location: LocationWidget,
+  homeassistant: HomeAssistantWidget,
   todo: TodoWidget,
   notes: NotesWidget,
   system: SystemStatsWidget
@@ -79,6 +81,7 @@ export const DynamicDashboard: React.FC<DynamicDashboardProps> = ({ editMode, sc
             title="Weather"
           />
         )}
+        {visibleWidgets.includes('homeassistant') && <HomeAssistantWidget />}
         {visibleWidgets.includes('todo') && <TodoWidget />}
         {visibleWidgets.includes('system') && <SystemStatsWidget />}
       </div>
