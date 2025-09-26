@@ -9,7 +9,7 @@ import { Card } from '@/components/ui/card';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Settings, Calendar, MapPin, Monitor, Palette, Clock, Cloud, SquareCheck as CheckSquare, FileText, Activity, Eye, EyeOff, Trash2, Save } from 'lucide-react';
-import { Chrome as Home } from 'lucide-react'm '@/hooks/useDashboardSettings';
+import { useDashboardSettings } from '@/hooks/useDashboardSettings';
 
 interface EnhancedSettingsDialogProps {
   open: boolean;
