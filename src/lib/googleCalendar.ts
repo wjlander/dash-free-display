@@ -1,4 +1,4 @@
-import { supabase } from '@/integrations/supabase/client';
+import { supabase } from '../integrations/supabase/client';
 import { GoogleCalendarConfig, CalendarEvent, GoogleCalendarList } from '@/types/calendar';
 
 export class GoogleCalendarAPI {

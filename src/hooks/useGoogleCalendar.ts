@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useAuth } from './useAuth';
-import { useToast } from './use-toast';
+import { supabase } from '../integrations/supabase/client';
 import { GoogleCalendarAPI } from '@/lib/googleCalendar';
 import { CalendarEvent, GoogleCalendarConfig, GoogleCalendarList } from '@/types/calendar';
 
