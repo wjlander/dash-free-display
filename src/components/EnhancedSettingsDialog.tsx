@@ -11,6 +11,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Settings, Calendar, MapPin, Monitor, Palette, Clock, Cloud, SquareCheck as CheckSquare, FileText, Activity, Eye, EyeOff, Trash2, Save } from 'lucide-react';
 import { useDashboardSettings } from '@/hooks/useDashboardSettings';
 import { GoogleCalendarSetup } from './GoogleCalendarSetup';
+import { GoogleCalendarSetup } from './GoogleCalendarSetup';
 
 interface EnhancedSettingsDialogProps {
   open: boolean;
@@ -38,6 +39,7 @@ const THEME_VARIANTS = [
 export const EnhancedSettingsDialog: React.FC<EnhancedSettingsDialogProps> = ({ open, onOpenChange }) => {
   const { settings, layouts, loading, updateSettings, saveLayout, loadLayout, deleteLayout } = useDashboardSettings();
   const [newLayoutName, setNewLayoutName] = useState('');
+  const [showGoogleCalendarSetup, setShowGoogleCalendarSetup] = useState(false);
   const [showGoogleCalendarSetup, setShowGoogleCalendarSetup] = useState(false);
 
   const toggleWidget = (widgetId: string) => {
@@ -337,6 +339,11 @@ export const EnhancedSettingsDialog: React.FC<EnhancedSettingsDialogProps> = ({ 
           </Button>
         </div>
       </DialogContent>
+      
+      <GoogleCalendarSetup 
+        open={showGoogleCalendarSetup} 
+        onOpenChange={setShowGoogleCalendarSetup} 
+      />
       
       <GoogleCalendarSetup 
         open={showGoogleCalendarSetup} 
