@@ -4,19 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Slider } from '@/components/ui/slider';
 import { Switch } from '@/components/ui/switch';
-import { 
-  Home, 
-  Lightbulb, 
-  Power, 
-  Thermometer, 
-  Gauge, 
-  Settings, 
-  RefreshCw,
-  Plus,
-  Trash2,
-  Eye,
-  EyeOff
-} from 'lucide-react';
+import { Chrome as Home, Lightbulb, Power, Thermometer, Gauge, Settings, RefreshCw, Plus, Trash2, Eye, EyeOff } from 'lucide-react';
 import { useHomeAssistant } from '@/hooks/useHomeAssistant';
 import { HomeAssistantEntity } from '@/types/homeassistant';
 import { getEntityDomain, formatEntityState, isControllableEntity } from '@/lib/homeassistant';
