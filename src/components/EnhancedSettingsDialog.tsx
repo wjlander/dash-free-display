@@ -10,6 +10,7 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Settings, Calendar, MapPin, Monitor, Palette, Clock, Cloud, SquareCheck as CheckSquare, FileText, Activity, Eye, EyeOff, Trash2, Save } from 'lucide-react';
 import { useDashboardSettings } from '@/hooks/useDashboardSettings';
+import { GoogleCalendarSetup } from './GoogleCalendarSetup';
 
 interface EnhancedSettingsDialogProps {
   open: boolean;
@@ -36,6 +37,7 @@ const THEME_VARIANTS = [
 export const EnhancedSettingsDialog: React.FC<EnhancedSettingsDialogProps> = ({ open, onOpenChange }) => {
   const { settings, layouts, loading, updateSettings, saveLayout, loadLayout, deleteLayout } = useDashboardSettings();
   const [newLayoutName, setNewLayoutName] = useState('');
+  const [showGoogleCalendarSetup, setShowGoogleCalendarSetup] = useState(false);
 
   const toggleWidget = (widgetId: string) => {
     const currentWidgets = settings.visible_widgets || [];
@@ -227,26 +229,22 @@ export const EnhancedSettingsDialog: React.FC<EnhancedSettingsDialogProps> = ({ 
               <h3 className="text-lg font-semibold text-foreground mb-4">Google Calendar Integration</h3>
               
               <div className="space-y-4">
-                <div className="flex items-center justify-between">
-                  <div className="space-y-0.5">
-                    <Label className="text-base">Enable Google Calendar</Label>
-                    <p className="text-sm text-muted-foreground">
-                      Sync your Google Calendar events
-                    </p>
-                  </div>
-                  <Switch
-                    checked={settings.google_calendar_enabled || false}
-                    onCheckedChange={(checked) => updateSettings({ google_calendar_enabled: checked })}
-                  />
-                </div>
+                <Button 
+                  onClick={() => setShowGoogleCalendarSetup(true)}
+                  className="w-full"
+                >
+                  <Calendar className="w-4 h-4 mr-2" />
+                  Connect Google Calendar
+                </Button>
 
                 <div className="p-3 bg-muted/30 rounded-lg">
-                  <h4 className="font-medium text-sm mb-2">Setup Instructions:</h4>
-                  <ol className="text-xs text-muted-foreground space-y-1">
-                    <li>1. Go to Google Calendar settings</li>
-                    <li>2. Select your calendar and copy the Calendar ID</li>
-                    <li>3. Enable public access or use API key (coming soon)</li>
-                  </ol>
+                  <h4 className="font-medium text-sm mb-2">OAuth 2.0 Integration:</h4>
+                  <ul className="text-xs text-muted-foreground space-y-1">
+                    <li>• Secure access to your private calendars</li>
+                    <li>• No need to make calendars public</li>
+                    <li>• Automatic token refresh</li>
+                    <li>• Multiple calendar support</li>
+                  </ul>
                 </div>
               </div>
             </Card>
@@ -338,6 +336,11 @@ export const EnhancedSettingsDialog: React.FC<EnhancedSettingsDialogProps> = ({ 
           </Button>
         </div>
       </DialogContent>
+      
+      <GoogleCalendarSetup 
+        open={showGoogleCalendarSetup} 
+        onOpenChange={setShowGoogleCalendarSetup} 
+      />
     </Dialog>
   );
 };
