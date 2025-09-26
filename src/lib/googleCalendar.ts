@@ -58,18 +58,6 @@ export class GoogleCalendarAPI {
     return data.authUrl;
   }
 
-    const params = new URLSearchParams({
-      client_id: clientId,
-      redirect_uri: redirectUri,
-      response_type: 'code',
-      scope: 'https://www.googleapis.com/auth/calendar.readonly',
-      access_type: 'offline',
-      prompt: 'consent',
-    });
-
-    return `https://accounts.google.com/o/oauth2/v2/auth?${params.toString()}`;
-  }
-
   async exchangeCodeForTokens(code: string, redirectUri: string): Promise<any> {
     const { data, error } = await supabase.functions.invoke('google-oauth-token', {
       body: { code, redirectUri }
