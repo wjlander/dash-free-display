@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
-import { Save, X, Plus, Trash2, Move, Clock, CloudSun, Calendar, Newspaper, Image as ImageIcon, Grid3x3 as Grid3X3 } from 'lucide-react';
+import { Save, X, Plus, Trash2, Move, Clock, CloudSun, Calendar, Newspaper, Image as ImageIcon, Grid3x3 as Grid3X3, Settings } from 'lucide-react';
 
 interface WidgetLayoutItem {
   id: string;
