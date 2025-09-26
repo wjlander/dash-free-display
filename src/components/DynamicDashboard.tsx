@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useDashboardSettings } from '@/hooks/useDashboardSettings';
+import { DashboardScreen } from '@/types/screen';
 import { 
   ClockWidget, 
   WeatherWidget, 
@@ -12,6 +13,7 @@ import {
 
 interface DynamicDashboardProps {
   editMode: boolean;
+  screen?: DashboardScreen | null;
 }
 
 const WIDGET_COMPONENTS = {
@@ -24,7 +26,7 @@ const WIDGET_COMPONENTS = {
   system: SystemStatsWidget
 };
 
-export const DynamicDashboard: React.FC<DynamicDashboardProps> = ({ editMode }) => {
+export const DynamicDashboard: React.FC<DynamicDashboardProps> = ({ editMode, screen }) => {
   const { settings } = useDashboardSettings();
   const [currentTime, setCurrentTime] = useState(new Date());
 
@@ -36,7 +38,8 @@ export const DynamicDashboard: React.FC<DynamicDashboardProps> = ({ editMode }) 
     return () => clearInterval(timer);
   }, []);
 
-  const visibleWidgets = settings.visible_widgets || ['clock', 'weather', 'calendar', 'location'];
+  // Use screen-specific layout if available, otherwise fall back to user settings
+  const visibleWidgets = screen?.layout_data?.map(w => w.type) || settings.visible_widgets || ['clock', 'weather', 'calendar', 'location'];
 
   if (editMode) {
     return (
@@ -52,18 +55,20 @@ export const DynamicDashboard: React.FC<DynamicDashboardProps> = ({ editMode }) 
     <div className="flex gap-6 h-full">
       {/* Left Sidebar - Date, Time, Location */}
       <div className="w-80 flex flex-col gap-6">
-        {/* Always show clock */}
-        <div className="bg-gradient-glass border-widget-border shadow-widget backdrop-blur-sm rounded-lg p-6">
-          <div className="text-6xl font-bold text-foreground mb-2">
-            {currentTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false })}
+        {/* Show clock if included in layout or as default */}
+        {(visibleWidgets.includes('clock') || !screen) && (
+          <div className="bg-gradient-glass border-widget-border shadow-widget backdrop-blur-sm rounded-lg p-6">
+            <div className="text-6xl font-bold text-foreground mb-2">
+              {currentTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false })}
+            </div>
+            <div className="text-2xl font-medium text-primary mb-1">
+              {currentTime.toLocaleDateString('en-US', { weekday: 'long' })} {currentTime.getDate()}
+            </div>
+            <div className="text-lg text-muted-foreground">
+              {currentTime.toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}
+            </div>
           </div>
-          <div className="text-2xl font-medium text-primary mb-1">
-            {currentTime.toLocaleDateString('en-US', { weekday: 'long' })} {currentTime.getDate()}
-          </div>
-          <div className="text-lg text-muted-foreground">
-            {currentTime.toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}
-          </div>
-        </div>
+        )}
 
         {/* Conditional widgets based on settings */}
         {visibleWidgets.includes('location') && <LocationWidget settings={settings} />}

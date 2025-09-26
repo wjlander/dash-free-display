@@ -8,6 +8,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
 import { AuthPage } from "./pages/Auth";
+import { PublicScreenView } from "./components/PublicScreenView";
 import { useAuth } from "./hooks/useAuth";
 
 const queryClient = new QueryClient();
@@ -37,6 +38,7 @@ function AppContent() {
     <Routes>
       <Route path="/" element={isAuthenticated ? <Index /> : <AuthPage />} />
       <Route path="/auth" element={<AuthPage />} />
+      <Route path="/screen/:token" element={<PublicScreenView />} />
       <Route path="*" element={<NotFound />} />
     </Routes>
   );

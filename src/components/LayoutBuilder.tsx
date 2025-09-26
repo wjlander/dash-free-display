@@ -29,12 +29,14 @@ interface WidgetLayoutItem {
 
 interface LayoutBuilderProps {
   layout: WidgetLayoutItem[];
+  screenId?: string;
   onSave: (layout: WidgetLayoutItem[]) => void;
   onCancel: () => void;
 }
 
 export const LayoutBuilder: React.FC<LayoutBuilderProps> = ({
   layout,
+  screenId,
   onSave,
   onCancel
 }) => {
@@ -316,9 +318,11 @@ export const LayoutBuilder: React.FC<LayoutBuilderProps> = ({
                             ...widget.position,
                             h: parseInt(e.target.value)
                           });
-                        }
+                  <h2 className="text-lg font-semibold text-foreground">
+                    Layout Builder {screenId && '- Screen Layout'}
+                  </h2>
                       }}
-                    />
+                    {screenId ? 'Configure widgets for this screen' : 'Drag widgets to arrange your dashboard layout'}
                   </div>
                 </div>
               </div>

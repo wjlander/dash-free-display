@@ -36,6 +36,7 @@ interface SavedWidgetLayout {
 interface VisualDashboardProps {
   editMode: boolean;
   onExitEdit: () => void;
+  screenId?: string;
 }
 
 const WIDGET_COMPONENTS = {
@@ -58,8 +59,9 @@ const DEFAULT_WIDGET_CONFIGS: Record<string, Omit<WidgetConfig, 'position'>> = {
   system: { id: 'system', type: 'system', size: { width: 300, height: 200 } }
 };
 
-export const VisualDashboard: React.FC<VisualDashboardProps> = ({ editMode, onExitEdit }) => {
+export const VisualDashboard: React.FC<VisualDashboardProps> = ({ editMode, onExitEdit, screenId }) => {
   const { settings, updateSettings } = useDashboardSettings();
+  const { saveScreenLayout } = useScreens();
   const [widgets, setWidgets] = useState<WidgetConfig[]>(() => {
     const savedLayout = (Array.isArray(settings.widget_order) ? settings.widget_order : []) as unknown as SavedWidgetLayout[];
     return (settings.visible_widgets || ['clock', 'weather', 'calendar']).map((widgetType, index) => {
@@ -163,7 +165,11 @@ export const VisualDashboard: React.FC<VisualDashboardProps> = ({ editMode, onEx
       size: widget.size
     }));
     
-    await updateSettings({ widget_order: layoutData as any });
+    if (screenId) {
+      await saveScreenLayout(screenId, layoutData as any);
+    } else {
+      await updateSettings({ widget_order: layoutData as any });
+    }
     onExitEdit();
   };
 

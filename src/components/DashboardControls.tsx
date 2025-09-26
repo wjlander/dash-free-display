@@ -12,11 +12,14 @@ import {
   Palette,
   RotateCcw,
   LogOut,
-  User
+  User,
+  Layers
 } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
 import { useToast } from '@/hooks/use-toast';
+import { useScreens } from '@/hooks/useScreens';
 import { EnhancedSettingsDialog } from './EnhancedSettingsDialog';
+import { ScreenManager } from './ScreenManager';
 
 interface DashboardControlsProps {
   editMode: boolean;
@@ -36,7 +39,9 @@ export const DashboardControls: React.FC<DashboardControlsProps> = ({
   onImportConfig
 }) => {
   const [showSettings, setShowSettings] = useState(false);
+  const [showScreenManager, setShowScreenManager] = useState(false);
   const { user, signOut } = useAuth();
+  const { currentScreen, screens } = useScreens();
   const { toast } = useToast();
 
   const handleSignOut = async () => {
@@ -57,17 +62,32 @@ export const DashboardControls: React.FC<DashboardControlsProps> = ({
           <div className="flex items-center gap-3">
             <Monitor className="w-6 h-6 text-primary" />
             <div>
-              <h1 className="text-xl font-bold bg-gradient-primary bg-clip-text text-transparent">
-                Custom Dashboard
-              </h1>
+              <div className="flex items-center gap-2">
+                <h1 className="text-xl font-bold bg-gradient-primary bg-clip-text text-transparent">
+                  {currentScreen?.name || 'Custom Dashboard'}
+                </h1>
+                {currentScreen?.is_public && (
+                  <span className="text-xs bg-success/20 text-success px-2 py-1 rounded">Public</span>
+                )}
+              </div>
               <p className="text-sm text-muted-foreground">
-                Free DAKboard Alternative
+                {currentScreen?.description || 'Free DAKboard Alternative'}
               </p>
             </div>
           </div>
 
           {/* Center section - Quick actions */}
           <div className="hidden md:flex items-center gap-2">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setShowScreenManager(true)}
+              className="transition-all duration-200"
+            >
+              <Layers className="w-4 h-4 mr-2" />
+              Screens ({screens.length})
+            </Button>
+
             <Button
               variant={editMode ? "default" : "outline"}
               size="sm"
@@ -147,6 +167,16 @@ export const DashboardControls: React.FC<DashboardControlsProps> = ({
         {/* User info and mobile controls */}
         <div className="md:hidden mt-4 flex flex-wrap gap-2">
           <Button
+            variant="outline"
+            size="sm"
+            onClick={() => setShowScreenManager(true)}
+            className="flex-1 min-w-0"
+          >
+            <Layers className="w-4 h-4 mr-2" />
+            Screens
+          </Button>
+
+          <Button
             variant={editMode ? "default" : "outline"}
             size="sm"
             onClick={onToggleEdit}
@@ -191,7 +221,7 @@ export const DashboardControls: React.FC<DashboardControlsProps> = ({
           </div>
           
           <div className="flex items-center gap-2">
-            <span>Screen: Default</span>
+            <span>Screen: {currentScreen?.name || 'Default'}</span>
             <Button variant="ghost" size="sm" className="p-0 h-auto">
               <RotateCcw className="w-3 h-3" />
             </Button>
@@ -202,6 +232,11 @@ export const DashboardControls: React.FC<DashboardControlsProps> = ({
       <EnhancedSettingsDialog 
         open={showSettings} 
         onOpenChange={setShowSettings} 
+      />
+      
+      <ScreenManager 
+        open={showScreenManager} 
+        onOpenChange={setShowScreenManager} 
       />
     </Card>
   );
