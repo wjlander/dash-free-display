@@ -54,6 +54,13 @@ export const LayoutBuilder: React.FC<LayoutBuilderProps> = ({
       defaultProps: { maxEvents: 5, showUpcoming: true }
     },
     {
+      id: 'homeassistant',
+      name: 'Home Assistant Widget',
+      icon: Settings,
+      description: 'Smart home device control',
+      defaultProps: { maxItems: 6, showControls: true }
+    },
+    {
       id: 'news',
       name: 'News Widget',
       icon: Newspaper,

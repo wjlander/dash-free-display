@@ -23,7 +23,7 @@ export interface DashboardLayout {
 
 export const useDashboardSettings = () => {
   const [settings, setSettings] = useState<DashboardSettings>({
-    visible_widgets: ['clock', 'weather', 'calendar', 'location'],
+    visible_widgets: ['clock', 'weather', 'calendar', 'location', 'homeassistant'],
     theme_variant: 'default',
     widget_order: [],
     google_calendar_enabled: false,

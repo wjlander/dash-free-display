@@ -22,6 +22,7 @@ const AVAILABLE_WIDGETS = [
   { id: 'weather', name: 'Weather', icon: Cloud, description: 'Local weather information' },
   { id: 'calendar', name: 'Google Calendar', icon: Calendar, description: 'Your calendar events' },
   { id: 'location', name: 'Location', icon: MapPin, description: 'Current location tracking' },
+  { id: 'homeassistant', name: 'Home Assistant', icon: Settings, description: 'Smart home device control' },
   { id: 'todo', name: 'Tasks', icon: CheckSquare, description: 'Quick task management' },
   { id: 'notes', name: 'Notes', icon: FileText, description: 'Quick notes and reminders' },
   { id: 'system', name: 'System Stats', icon: Activity, description: 'System performance metrics' }
