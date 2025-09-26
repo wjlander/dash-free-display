@@ -23,7 +23,7 @@ export interface DashboardLayout {
 
 export const useDashboardSettings = () => {
   const [settings, setSettings] = useState<DashboardSettings>({
-    visible_widgets: ['clock', 'weather', 'calendar', 'location', 'homeassistant'],
+    visible_widgets: ['clock', 'weather', 'calendar', 'location'],
     theme_variant: 'default',
     widget_order: [],
     google_calendar_enabled: false,
@@ -105,7 +105,7 @@ export const useDashboardSettings = () => {
         // Ensure arrays are properly typed
         const formattedSettings = {
           ...data,
-          visible_widgets: Array.isArray(data.visible_widgets) ? data.visible_widgets as string[] : ['clock', 'weather', 'calendar', 'location'],
+          visible_widgets: Array.isArray(data.visible_widgets) ? data.visible_widgets as string[] : ['clock', 'weather', 'calendar', 'location', 'homeassistant'],
           widget_order: Array.isArray(data.widget_order) ? data.widget_order as string[] : []
         };
         setSettings(formattedSettings);
