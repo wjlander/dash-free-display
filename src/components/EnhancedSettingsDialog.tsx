@@ -11,7 +11,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Settings, Calendar, MapPin, Monitor, Palette, Clock, Cloud, SquareCheck as CheckSquare, FileText, Activity, Eye, EyeOff, Trash2, Save } from 'lucide-react';
 import { useDashboardSettings } from '@/hooks/useDashboardSettings';
 import { GoogleCalendarSetup } from './GoogleCalendarSetup';
-import { GoogleCalendarSetup } from './GoogleCalendarSetup';
+import { HomeAssistantSetup } from './HomeAssistantSetup';
 
 interface EnhancedSettingsDialogProps {
   open: boolean;
@@ -40,7 +40,7 @@ export const EnhancedSettingsDialog: React.FC<EnhancedSettingsDialogProps> = ({ 
   const { settings, layouts, loading, updateSettings, saveLayout, loadLayout, deleteLayout } = useDashboardSettings();
   const [newLayoutName, setNewLayoutName] = useState('');
   const [showGoogleCalendarSetup, setShowGoogleCalendarSetup] = useState(false);
-  const [showGoogleCalendarSetup, setShowGoogleCalendarSetup] = useState(false);
+  const [showHomeAssistantSetup, setShowHomeAssistantSetup] = useState(false);
 
   const toggleWidget = (widgetId: string) => {
     const currentWidgets = settings.visible_widgets || [];
@@ -77,7 +77,7 @@ export const EnhancedSettingsDialog: React.FC<EnhancedSettingsDialogProps> = ({ 
         </DialogHeader>
 
         <Tabs defaultValue="widgets" className="w-full">
-          <TabsList className="grid w-full grid-cols-5">
+          <TabsList className="grid w-full grid-cols-6">
             <TabsTrigger value="widgets">
               <Eye className="w-4 h-4 mr-2" />
               Widgets
@@ -89,6 +89,10 @@ export const EnhancedSettingsDialog: React.FC<EnhancedSettingsDialogProps> = ({ 
             <TabsTrigger value="calendar">
               <Calendar className="w-4 h-4 mr-2" />
               Calendar
+            </TabsTrigger>
+            <TabsTrigger value="homeassistant">
+              <Settings className="w-4 h-4 mr-2" />
+              Home Assistant
             </TabsTrigger>
             <TabsTrigger value="location">
               <MapPin className="w-4 h-4 mr-2" />
@@ -253,6 +257,33 @@ export const EnhancedSettingsDialog: React.FC<EnhancedSettingsDialogProps> = ({ 
             </Card>
           </TabsContent>
 
+          {/* Home Assistant Settings */}
+          <TabsContent value="homeassistant" className="space-y-4">
+            <Card className="p-4 bg-widget-bg border-widget-border">
+              <h3 className="text-lg font-semibold text-foreground mb-4">Home Assistant Integration</h3>
+              
+              <div className="space-y-4">
+                <Button 
+                  onClick={() => setShowHomeAssistantSetup(true)}
+                  className="w-full"
+                >
+                  <Settings className="w-4 h-4 mr-2" />
+                  Configure Home Assistant
+                </Button>
+
+                <div className="p-3 bg-muted/30 rounded-lg">
+                  <h4 className="font-medium text-sm mb-2">Smart Home Control:</h4>
+                  <ul className="text-xs text-muted-foreground space-y-1">
+                    <li>• Control lights, switches, and climate devices</li>
+                    <li>• Real-time entity state updates</li>
+                    <li>• Secure local or cloud connections</li>
+                    <li>• Customizable widget layouts</li>
+                  </ul>
+                </div>
+              </div>
+            </Card>
+          </TabsContent>
+
           {/* Location Settings */}
           <TabsContent value="location" className="space-y-4">
             <Card className="p-4 bg-widget-bg border-widget-border">
@@ -345,9 +376,9 @@ export const EnhancedSettingsDialog: React.FC<EnhancedSettingsDialogProps> = ({ 
         onOpenChange={setShowGoogleCalendarSetup} 
       />
       
-      <GoogleCalendarSetup 
-        open={showGoogleCalendarSetup} 
-        onOpenChange={setShowGoogleCalendarSetup} 
+      <HomeAssistantSetup 
+        open={showHomeAssistantSetup} 
+        onOpenChange={setShowHomeAssistantSetup} 
       />
     </Dialog>
   );
