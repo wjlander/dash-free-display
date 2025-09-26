@@ -300,9 +300,9 @@ export const GoogleCalendarWidget: React.FC<GoogleCalendarWidgetProps> = ({ titl
           ) : (
             <div className="text-center py-2">
               <p className="text-sm text-muted-foreground mb-2">No events today</p>
-              {!userSettings?.google_calendar_enabled && (
+              {!googleCalendarConnected && (
                 <p className="text-xs text-muted-foreground">
-                  Enable Google Calendar in settings to sync real events
+                  Connect Google Calendar in settings to sync real events
                 </p>
               )}
             </div>
