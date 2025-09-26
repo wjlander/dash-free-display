@@ -15,20 +15,17 @@ export class GoogleCalendarAPI {
   async initializeConfig(userId: string): Promise<void> {
     const { data, error } = await supabase
       .from('google_calendar_configs')
-      if (error) {
-        console.error('Error loading Google Calendar config:', error);
-        this.config = null;
-        return;
-      }
       .eq('user_id', userId)
-      this.config = data || null;
-        .maybeSingle();
+      .select('*')
+      .maybeSingle();
+
     if (error && error.code !== 'PGRST116') {
+      console.error('Error loading Google Calendar config:', error);
       this.config = null;
       throw error;
     }
 
-    this.config = data;
+    this.config = data || null;
   }
 
   async saveConfig(config: Omit<GoogleCalendarConfig, 'id' | 'created_at' | 'updated_at'>): Promise<GoogleCalendarConfig> {
