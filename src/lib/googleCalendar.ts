@@ -48,10 +48,15 @@ export class GoogleCalendarAPI {
   }
 
   async getAuthUrl(redirectUri: string): Promise<string> {
-    const clientId = import.meta.env.VITE_GOOGLE_CLIENT_ID;
-    if (!clientId) {
-      throw new Error('Google Client ID not configured');
-    }
+    // Client ID will be retrieved from Supabase secrets in the edge function
+    // We'll use a placeholder here and let the backend handle the actual OAuth URL generation
+    const { data, error } = await supabase.functions.invoke('google-oauth-url', {
+      body: { redirectUri }
+    });
+
+    if (error) throw error;
+    return data.authUrl;
+  }
 
     const params = new URLSearchParams({
       client_id: clientId,
