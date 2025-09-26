@@ -84,7 +84,14 @@ export const GoogleCalendarWidget: React.FC<GoogleCalendarWidgetProps> = ({ titl
   };
 
   const fetchCalendarEvents = async () => {
-    if (!userSettings?.google_calendar_id) return;
+    if (!userSettings?.google_calendar_enabled || !userSettings?.google_calendar_id) {
+      toast({
+        title: "Calendar not configured",
+        description: "Please enable and configure Google Calendar in settings",
+        variant: "destructive"
+      });
+      return;
+    }
 
     setIsLoading(true);
     try {
@@ -107,9 +114,17 @@ export const GoogleCalendarWidget: React.FC<GoogleCalendarWidgetProps> = ({ titl
       });
     } catch (error: any) {
       console.error('Error fetching calendar events:', error);
+      
+      let errorMessage = "Could not sync with Google Calendar";
+      if (error.details) {
+        errorMessage = error.details;
+      } else if (error.message) {
+        errorMessage = error.message;
+      }
+      
       toast({
         title: "Calendar sync failed",
-        description: error.message || "Could not sync with Google Calendar",
+        description: errorMessage,
         variant: "destructive"
       });
     } finally {

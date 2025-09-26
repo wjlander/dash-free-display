@@ -42,8 +42,14 @@ export const LocationWidget: React.FC<LocationWidgetProps> = ({ title = "Locatio
         .limit(1)
         .single();
 
+      if (error && error.code !== 'PGRST116') {
+        throw error;
+      }
+      
       if (data) {
         setCurrentLocation(data);
+      } else {
+        setCurrentLocation(null);
       }
     } catch (error) {
       console.error('Error loading location:', error);
