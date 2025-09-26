@@ -1,19 +1,7 @@
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
-import { 
-  Save, 
-  X, 
-  Plus, 
-  Trash2, 
-  Move, 
-  Clock,
-  CloudSun,
-  Calendar,
-  Newspaper,
-  Image as ImageIcon,
-  Grid3X3
-} from 'lucide-react';
+import { Save, X, Plus, Trash2, Move, Clock, CloudSun, Calendar, Newspaper, Image as ImageIcon, Grid3x3 as Grid3X3 } from 'lucide-react';
 
 interface WidgetLayoutItem {
   id: string;
@@ -128,9 +116,11 @@ export const LayoutBuilder: React.FC<LayoutBuilderProps> = ({
             <div className="flex items-center gap-3">
               <Grid3X3 className="w-6 h-6 text-primary" />
               <div>
-                <h2 className="text-lg font-semibold text-foreground">Layout Builder</h2>
+                <h2 className="text-lg font-semibold text-foreground">
+                  Layout Builder {screenId && '- Screen Layout'}
+                </h2>
                 <p className="text-sm text-muted-foreground">
-                  Drag widgets to arrange your dashboard layout
+                  {screenId ? 'Configure widgets for this screen' : 'Drag widgets to arrange your dashboard layout'}
                 </p>
               </div>
             </div>
@@ -318,11 +308,9 @@ export const LayoutBuilder: React.FC<LayoutBuilderProps> = ({
                             ...widget.position,
                             h: parseInt(e.target.value)
                           });
-                  <h2 className="text-lg font-semibold text-foreground">
-                    Layout Builder {screenId && '- Screen Layout'}
-                  </h2>
+                        }
                       }}
-                    {screenId ? 'Configure widgets for this screen' : 'Drag widgets to arrange your dashboard layout'}
+                    />
                   </div>
                 </div>
               </div>
