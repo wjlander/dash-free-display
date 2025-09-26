@@ -163,8 +163,8 @@ export const GoogleCalendarSetup: React.FC<GoogleCalendarSetupProps> = ({ open, 
               <strong>Setup Requirements:</strong>
               <ol className="list-decimal list-inside mt-2 space-y-1 text-sm">
                 <li>Google Cloud Console project with Calendar API enabled</li>
-                <li>OAuth 2.0 Client ID configured with correct redirect URI</li>
-                <li>Environment variables set in your deployment</li>
+                <li>OAuth 2.0 Client ID saved in Supabase secrets</li>
+                <li>Correct redirect URI configured in Google Console</li>
               </ol>
               <div className="mt-3">
                 <Button variant="outline" size="sm" asChild>
