@@ -40,9 +40,9 @@ export const LocationWidget: React.FC<LocationWidgetProps> = ({ title = "Locatio
         .eq('user_id', user.id)
         .order('timestamp', { ascending: false })
         .limit(1)
-        .single();
+        .maybeSingle();
 
-      if (error && error.code !== 'PGRST116') {
+      if (error) {
         throw error;
       }
       

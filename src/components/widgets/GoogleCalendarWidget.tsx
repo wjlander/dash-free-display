@@ -116,7 +116,19 @@ export const GoogleCalendarWidget: React.FC<GoogleCalendarWidgetProps> = ({ titl
       console.error('Error fetching calendar events:', error);
       
       let errorMessage = "Could not sync with Google Calendar";
-      if (error.details) {
+      
+      // Try to extract specific error message from Edge Function response
+      if (error.context?.body) {
+        try {
+          const errorBody = typeof error.context.body === 'string' 
+            ? JSON.parse(error.context.body) 
+            : error.context.body;
+          errorMessage = errorBody.error || errorBody.message || errorMessage;
+        } catch (parseError) {
+          // If parsing fails, use the raw body as error message
+          errorMessage = error.context.body;
+        }
+      } else if (error.details) {
         errorMessage = error.details;
       } else if (error.message) {
         errorMessage = error.message;
