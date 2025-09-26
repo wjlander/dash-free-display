@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useAuth } from './useAuth';
 import { useToast } from './use-toast';
-import { supabase } from '../integrations/supabase/client';
+import { supabase } from '@/integrations/supabase/client';
 import { GoogleCalendarAPI } from '@/lib/googleCalendar';
 import { CalendarEvent, GoogleCalendarConfig, GoogleCalendarList } from '@/types/calendar';
 
@@ -30,14 +30,17 @@ export const useGoogleCalendar = () => {
       
       // Only proceed if configuration was successfully loaded
       if (api.config) {
+        setConfig(api.config);
         setConnected(true);
         await loadCalendars();
         await loadEvents();
       } else {
+        setConfig(null);
         setConnected(false);
       }
     } catch (error) {
       console.error('Error loading Google Calendar config:', error);
+      setConfig(null);
       setConnected(false);
     }
   };

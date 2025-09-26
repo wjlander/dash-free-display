@@ -3,7 +3,7 @@ import { GoogleCalendarConfig, CalendarEvent, GoogleCalendarList } from '@/types
 
 export class GoogleCalendarAPI {
   private static instance: GoogleCalendarAPI;
-  private config: GoogleCalendarConfig | null = null;
+  public config: GoogleCalendarConfig | null = null;
 
   static getInstance(): GoogleCalendarAPI {
     if (!GoogleCalendarAPI.instance) {
@@ -13,19 +13,25 @@ export class GoogleCalendarAPI {
   }
 
   async initializeConfig(userId: string): Promise<void> {
-    const { data, error } = await supabase
-      .from('google_calendar_configs')
-      .eq('user_id', userId)
-      .select('*')
-      .maybeSingle();
+    try {
+      const { data, error } = await supabase
+        .from('google_calendar_configs')
+        .select('*')
+        .eq('user_id', userId)
+        .maybeSingle();
 
-    if (error && error.code !== 'PGRST116') {
-      console.error('Error loading Google Calendar config:', error);
+      if (error && error.code !== 'PGRST116') {
+        console.error('Error loading Google Calendar config:', error);
+        this.config = null;
+        throw error;
+      }
+
+      this.config = data || null;
+    } catch (error) {
+      console.error('Error in initializeConfig:', error);
       this.config = null;
       throw error;
     }
-
-    this.config = data || null;
   }
 
   async saveConfig(config: Omit<GoogleCalendarConfig, 'id' | 'created_at' | 'updated_at'>): Promise<GoogleCalendarConfig> {

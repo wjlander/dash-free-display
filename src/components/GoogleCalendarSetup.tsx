@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Badge } from '@/components/ui/badge';
-import { Calendar, ExternalLink, CircleCheck as CheckCircle, CircleAlert as AlertCircle, Shield, Key, Globe } from 'lucide-react';
+import { Calendar, ExternalLink, CheckCircle, AlertCircle, Shield, Key, Globe } from 'lucide-react';
 import { useGoogleCalendar } from '@/hooks/useGoogleCalendar';
 
 interface GoogleCalendarSetupProps {
