@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
 import { Card } from '@/components/ui/card';
 import { useGoogleCalendar } from '@/hooks/useGoogleCalendar';
-import { Calendar, CheckCircle, AlertCircle } from 'lucide-react';
+import { Calendar, CircleCheck as CheckCircle, CircleAlert as AlertCircle } from 'lucide-react';
 
 export const GoogleOAuthCallback: React.FC = () => {
   const [searchParams] = useSearchParams();
