@@ -86,10 +86,10 @@ export const GoogleCalendarWidget: React.FC<GoogleCalendarWidgetProps> = ({ titl
   };
 
   const fetchCalendarEvents = async () => {
-    if (!userSettings?.google_calendar_enabled || !userSettings?.google_calendar_id) {
+    if (!userSettings?.google_calendar_enabled || !userSettings?.google_calendar_id || !googleCalendarConnected) {
       toast({
         title: "Calendar not configured",
-        description: "Please enable and configure Google Calendar in settings",
+        description: "Please connect your Google Calendar in settings",
         variant: "destructive"
       });
       return;
