@@ -8,6 +8,7 @@ import {
   WeatherWidget, 
   GoogleCalendarWidget, 
   LocationWidget,
+  HomeAssistantWidget,
   TodoWidget,
   NotesWidget,
   SystemStatsWidget
@@ -36,6 +37,7 @@ interface SavedWidgetLayout {
 interface VisualDashboardProps {
   editMode: boolean;
   onExitEdit: () => void;
+  screenId?: string;
 }
 
 const WIDGET_COMPONENTS = {
@@ -43,6 +45,7 @@ const WIDGET_COMPONENTS = {
   weather: WeatherWidget,
   calendar: GoogleCalendarWidget,
   location: LocationWidget,
+  homeassistant: HomeAssistantWidget,
   todo: TodoWidget,
   notes: NotesWidget,
   system: SystemStatsWidget
@@ -53,13 +56,15 @@ const DEFAULT_WIDGET_CONFIGS: Record<string, Omit<WidgetConfig, 'position'>> = {
   weather: { id: 'weather', type: 'weather', size: { width: 300, height: 250 } },
   calendar: { id: 'calendar', type: 'calendar', size: { width: 600, height: 400 } },
   location: { id: 'location', type: 'location', size: { width: 280, height: 150 } },
+  homeassistant: { id: 'homeassistant', type: 'homeassistant', size: { width: 350, height: 300 } },
   todo: { id: 'todo', type: 'todo', size: { width: 350, height: 300 } },
   notes: { id: 'notes', type: 'notes', size: { width: 350, height: 250 } },
   system: { id: 'system', type: 'system', size: { width: 300, height: 200 } }
 };
 
-export const VisualDashboard: React.FC<VisualDashboardProps> = ({ editMode, onExitEdit }) => {
+export const VisualDashboard: React.FC<VisualDashboardProps> = ({ editMode, onExitEdit, screenId }) => {
   const { settings, updateSettings } = useDashboardSettings();
+  const { saveScreenLayout } = useScreens();
   const [widgets, setWidgets] = useState<WidgetConfig[]>(() => {
     const savedLayout = (Array.isArray(settings.widget_order) ? settings.widget_order : []) as unknown as SavedWidgetLayout[];
     return (settings.visible_widgets || ['clock', 'weather', 'calendar']).map((widgetType, index) => {
@@ -163,7 +168,11 @@ export const VisualDashboard: React.FC<VisualDashboardProps> = ({ editMode, onEx
       size: widget.size
     }));
     
-    await updateSettings({ widget_order: layoutData as any });
+    if (screenId) {
+      await saveScreenLayout(screenId, layoutData as any);
+    } else {
+      await updateSettings({ widget_order: layoutData as any });
+    }
     onExitEdit();
   };
 

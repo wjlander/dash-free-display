@@ -74,6 +74,42 @@ export type Database = {
         }
         Relationships: []
       }
+      dashboard_screens: {
+        Row: {
+          created_at: string
+          description: string | null
+          id: string
+          is_public: boolean
+          layout_data: Json
+          name: string
+          public_token: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          is_public?: boolean
+          layout_data?: Json
+          name: string
+          public_token?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          is_public?: boolean
+          layout_data?: Json
+          name?: string
+          public_token?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       food_items: {
         Row: {
           barcode: string | null
@@ -131,6 +167,114 @@ export type Database = {
           sugar_per_100g?: number | null
           updated_at?: string | null
           user_id?: string
+        }
+        Relationships: []
+      }
+      google_calendar_configs: {
+        Row: {
+          access_token: string
+          created_at: string
+          expires_at: string
+          id: string
+          is_connected: boolean | null
+          refresh_token: string
+          scope: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          access_token: string
+          created_at?: string
+          expires_at: string
+          id?: string
+          is_connected?: boolean | null
+          refresh_token: string
+          scope?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          access_token?: string
+          created_at?: string
+          expires_at?: string
+          id?: string
+          is_connected?: boolean | null
+          refresh_token?: string
+          scope?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      home_assistant_configs: {
+        Row: {
+          access_token: string
+          connection_type: string
+          created_at: string
+          ha_url: string
+          id: string
+          is_connected: boolean | null
+          last_sync: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          access_token: string
+          connection_type?: string
+          created_at?: string
+          ha_url: string
+          id?: string
+          is_connected?: boolean | null
+          last_sync?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          access_token?: string
+          connection_type?: string
+          created_at?: string
+          ha_url?: string
+          id?: string
+          is_connected?: boolean | null
+          last_sync?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      home_assistant_widgets: {
+        Row: {
+          config: Json
+          created_at: string
+          display_name: string
+          entity_id: string
+          id: string
+          position: Json
+          updated_at: string
+          user_id: string
+          widget_type: string
+        }
+        Insert: {
+          config?: Json
+          created_at?: string
+          display_name: string
+          entity_id: string
+          id?: string
+          position?: Json
+          updated_at?: string
+          user_id: string
+          widget_type?: string
+        }
+        Update: {
+          config?: Json
+          created_at?: string
+          display_name?: string
+          entity_id?: string
+          id?: string
+          position?: Json
+          updated_at?: string
+          user_id?: string
+          widget_type?: string
         }
         Relationships: []
       }

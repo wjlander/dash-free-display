@@ -8,8 +8,10 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Card } from '@/components/ui/card';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Settings, Calendar, MapPin, Monitor, Palette, Clock, Cloud, CheckSquare, FileText, Activity, Eye, EyeOff, Trash2, Save } from 'lucide-react';
+import { Settings, Calendar, MapPin, Monitor, Palette, Clock, Cloud, SquareCheck as CheckSquare, FileText, Activity, Eye, EyeOff, Trash2, Save } from 'lucide-react';
 import { useDashboardSettings } from '@/hooks/useDashboardSettings';
+import { GoogleCalendarSetup } from './GoogleCalendarSetup';
+import { HomeAssistantSetup } from './HomeAssistantSetup';
 
 interface EnhancedSettingsDialogProps {
   open: boolean;
@@ -21,6 +23,7 @@ const AVAILABLE_WIDGETS = [
   { id: 'weather', name: 'Weather', icon: Cloud, description: 'Local weather information' },
   { id: 'calendar', name: 'Google Calendar', icon: Calendar, description: 'Your calendar events' },
   { id: 'location', name: 'Location', icon: MapPin, description: 'Current location tracking' },
+  { id: 'homeassistant', name: 'Home Assistant', icon: Settings, description: 'Smart home device control' },
   { id: 'todo', name: 'Tasks', icon: CheckSquare, description: 'Quick task management' },
   { id: 'notes', name: 'Notes', icon: FileText, description: 'Quick notes and reminders' },
   { id: 'system', name: 'System Stats', icon: Activity, description: 'System performance metrics' }
@@ -36,6 +39,8 @@ const THEME_VARIANTS = [
 export const EnhancedSettingsDialog: React.FC<EnhancedSettingsDialogProps> = ({ open, onOpenChange }) => {
   const { settings, layouts, loading, updateSettings, saveLayout, loadLayout, deleteLayout } = useDashboardSettings();
   const [newLayoutName, setNewLayoutName] = useState('');
+  const [showGoogleCalendarSetup, setShowGoogleCalendarSetup] = useState(false);
+  const [showHomeAssistantSetup, setShowHomeAssistantSetup] = useState(false);
 
   const toggleWidget = (widgetId: string) => {
     const currentWidgets = settings.visible_widgets || [];
@@ -72,7 +77,7 @@ export const EnhancedSettingsDialog: React.FC<EnhancedSettingsDialogProps> = ({ 
         </DialogHeader>
 
         <Tabs defaultValue="widgets" className="w-full">
-          <TabsList className="grid w-full grid-cols-5">
+          <TabsList className="grid w-full grid-cols-6">
             <TabsTrigger value="widgets">
               <Eye className="w-4 h-4 mr-2" />
               Widgets
@@ -84,6 +89,10 @@ export const EnhancedSettingsDialog: React.FC<EnhancedSettingsDialogProps> = ({ 
             <TabsTrigger value="calendar">
               <Calendar className="w-4 h-4 mr-2" />
               Calendar
+            </TabsTrigger>
+            <TabsTrigger value="homeassistant">
+              <Settings className="w-4 h-4 mr-2" />
+              Home Assistant
             </TabsTrigger>
             <TabsTrigger value="location">
               <MapPin className="w-4 h-4 mr-2" />
@@ -227,26 +236,49 @@ export const EnhancedSettingsDialog: React.FC<EnhancedSettingsDialogProps> = ({ 
               <h3 className="text-lg font-semibold text-foreground mb-4">Google Calendar Integration</h3>
               
               <div className="space-y-4">
-                <div className="flex items-center justify-between">
-                  <div className="space-y-0.5">
-                    <Label className="text-base">Enable Google Calendar</Label>
-                    <p className="text-sm text-muted-foreground">
-                      Sync your Google Calendar events
-                    </p>
-                  </div>
-                  <Switch
-                    checked={settings.google_calendar_enabled || false}
-                    onCheckedChange={(checked) => updateSettings({ google_calendar_enabled: checked })}
-                  />
-                </div>
+                <Button 
+                  onClick={() => setShowGoogleCalendarSetup(true)}
+                  className="w-full"
+                >
+                  <Calendar className="w-4 h-4 mr-2" />
+                  Connect Google Calendar
+                </Button>
 
                 <div className="p-3 bg-muted/30 rounded-lg">
-                  <h4 className="font-medium text-sm mb-2">Setup Instructions:</h4>
-                  <ol className="text-xs text-muted-foreground space-y-1">
-                    <li>1. Go to Google Calendar settings</li>
-                    <li>2. Select your calendar and copy the Calendar ID</li>
-                    <li>3. Enable public access or use API key (coming soon)</li>
-                  </ol>
+                  <h4 className="font-medium text-sm mb-2">OAuth 2.0 Integration:</h4>
+                  <ul className="text-xs text-muted-foreground space-y-1">
+                    <li>• Secure access to your private calendars</li>
+                    <li>• No need to make calendars public</li>
+                    <li>• Automatic token refresh</li>
+                    <li>• Multiple calendar support</li>
+                  </ul>
+                </div>
+              </div>
+            </Card>
+          </TabsContent>
+
+          {/* Home Assistant Settings */}
+          <TabsContent value="homeassistant" className="space-y-4">
+            <Card className="p-4 bg-widget-bg border-widget-border">
+              <h3 className="text-lg font-semibold text-foreground mb-4">Home Assistant Integration</h3>
+              
+              <div className="space-y-4">
+                <Button 
+                  onClick={() => setShowHomeAssistantSetup(true)}
+                  className="w-full"
+                >
+                  <Settings className="w-4 h-4 mr-2" />
+                  Configure Home Assistant
+                </Button>
+
+                <div className="p-3 bg-muted/30 rounded-lg">
+                  <h4 className="font-medium text-sm mb-2">Smart Home Control:</h4>
+                  <ul className="text-xs text-muted-foreground space-y-1">
+                    <li>• Control lights, switches, and climate devices</li>
+                    <li>• Real-time entity state updates</li>
+                    <li>• Secure local or cloud connections</li>
+                    <li>• Customizable widget layouts</li>
+                  </ul>
                 </div>
               </div>
             </Card>
@@ -338,6 +370,16 @@ export const EnhancedSettingsDialog: React.FC<EnhancedSettingsDialogProps> = ({ 
           </Button>
         </div>
       </DialogContent>
+      
+      <GoogleCalendarSetup 
+        open={showGoogleCalendarSetup} 
+        onOpenChange={setShowGoogleCalendarSetup} 
+      />
+      
+      <HomeAssistantSetup 
+        open={showHomeAssistantSetup} 
+        onOpenChange={setShowHomeAssistantSetup} 
+      />
     </Dialog>
   );
 };

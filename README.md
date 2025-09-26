@@ -8,12 +8,14 @@ A beautiful, fully functional digital dashboard that replicates and enhances DAK
 - **⏰ Clock Widget** - Multiple timezone support, 12/24h formats, customizable display
 - **🌤️ Weather Widget** - Current conditions, forecasts, weather alerts, multiple locations
 - **📅 Calendar Widget** - Google Calendar, iCloud, Office365 integration, unlimited calendars
+- **🏠 Home Assistant Widget** - Smart home device control, real-time status, entity management
 - **📰 News Widget** - RSS feeds, customizable sources, keyword filtering
 - **📸 Photo Widget** - Slideshow with multiple sources, transitions, local/cloud storage
 
 ### Advanced Features
 - **🎨 Visual Layout Builder** - Drag-and-drop interface for custom layouts
 - **📱 Responsive Design** - Works on any screen size from phones to large displays
+- **🔌 Smart Home Integration** - Control Home Assistant devices directly from dashboard
 - **🌙 Beautiful UI** - Modern glassmorphism design with smooth animations
 - **⚡ Performance Optimized** - Fast loading, efficient resource usage
 - **🔒 Privacy Focused** - All data processed locally, no cloud dependencies
@@ -37,6 +39,7 @@ A beautiful, fully functional digital dashboard that replicates and enhances DAK
 | Custom Screens | ❌ | ✅ (2-3 max) | ✅ **Unlimited** |
 | Calendar Sources | 2 max | 5/Unlimited | ✅ **Unlimited** |
 | Screen Loops | ❌ | ✅ (Plus only) | ✅ **Included** |
+| Smart Home Control | ❌ | ❌ | ✅ **Home Assistant** |
 | Visual Builder | ❌ | ❌ | ✅ **Advanced Builder** |
 | Offline Support | ❌ | ❌ | ✅ **Full Offline** |
 | Data Privacy | ❌ | ❌ | ✅ **Complete Privacy** |
@@ -95,6 +98,10 @@ echo 'gpu_mem=128' | sudo tee -a /boot/config.txt
 # Weather API (get free key from OpenWeatherMap)
 WEATHER_API_KEY=your_openweather_api_key
 
+# Home Assistant Integration
+HOME_ASSISTANT_URL=http://homeassistant.local:8123
+HOME_ASSISTANT_TOKEN=your_long_lived_access_token
+
 # Calendar Integration
 GOOGLE_CALENDAR_KEY=your_google_calendar_key
 MICROSOFT_GRAPH_KEY=your_microsoft_key
@@ -122,6 +129,12 @@ UNSPLASH_ACCESS_KEY=your_unsplash_key
     "units": "metric",
     "showForecast": true,
     "updateInterval": 300000
+  },
+  "homeassistant": {
+    "maxItems": 8,
+    "showControls": true,
+    "autoRefresh": true,
+    "groupByDomain": false
   },
   "calendar": {
     "calendars": [

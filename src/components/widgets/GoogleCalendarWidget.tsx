@@ -6,6 +6,7 @@ import { format, startOfMonth, endOfMonth, eachDayOfInterval, isSameMonth, isSam
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import { useAuth } from '@/hooks/useAuth';
+import { useGoogleCalendar } from '@/hooks/useGoogleCalendar';
 
 interface GoogleCalendarWidgetProps {
   title?: string;
@@ -28,6 +29,7 @@ export const GoogleCalendarWidget: React.FC<GoogleCalendarWidgetProps> = ({ titl
   const [userSettings, setUserSettings] = useState<any>(null);
   const { user } = useAuth();
   const { toast } = useToast();
+  const { connected: googleCalendarConnected } = useGoogleCalendar();
 
   useEffect(() => {
     if (user) {
@@ -36,7 +38,7 @@ export const GoogleCalendarWidget: React.FC<GoogleCalendarWidgetProps> = ({ titl
   }, [user]);
 
   useEffect(() => {
-    if (userSettings?.google_calendar_enabled && userSettings?.google_calendar_id) {
+    if (userSettings?.google_calendar_enabled && userSettings?.google_calendar_id && googleCalendarConnected) {
       fetchCalendarEvents();
     } else {
       // Show demo events if not configured
@@ -65,7 +67,7 @@ export const GoogleCalendarWidget: React.FC<GoogleCalendarWidgetProps> = ({ titl
         }
       ]);
     }
-  }, [userSettings]);
+  }, [userSettings?.google_calendar_enabled, userSettings?.google_calendar_id, googleCalendarConnected]);
 
   const loadUserSettings = async () => {
     try {
@@ -84,7 +86,14 @@ export const GoogleCalendarWidget: React.FC<GoogleCalendarWidgetProps> = ({ titl
   };
 
   const fetchCalendarEvents = async () => {
-    if (!userSettings?.google_calendar_id) return;
+    if (!userSettings?.google_calendar_enabled || !userSettings?.google_calendar_id) {
+      toast({
+        title: "Calendar not configured",
+        description: "Please enable and configure Google Calendar in settings",
+        variant: "destructive"
+      });
+      return;
+    }
 
     setIsLoading(true);
     try {
@@ -107,9 +116,27 @@ export const GoogleCalendarWidget: React.FC<GoogleCalendarWidgetProps> = ({ titl
       });
     } catch (error: any) {
       console.error('Error fetching calendar events:', error);
+      
+      let description = "Could not sync with Google Calendar. Please check your settings and API key.";
+
+      if (error.context?.body) {
+        try {
+          const errorBody = typeof error.context.body === 'string'
+            ? JSON.parse(error.context.body)
+            : error.context.body;
+          description = errorBody.error || errorBody.message || description;
+        } catch (parseError) {
+          description = `Edge Function error: ${error.context.body}`;
+        }
+      } else if (error.message) {
+        description = error.message;
+      } else if (error.details) {
+        description = error.details;
+      }
+      
       toast({
         title: "Calendar sync failed",
-        description: error.message || "Could not sync with Google Calendar",
+        description: description,
         variant: "destructive"
       });
     } finally {

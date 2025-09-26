@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { MapPin, Navigation, Home, Building2, AlertCircle } from 'lucide-react';
+import { MapPin, Navigation, Chrome as Home, Building2, CircleAlert as AlertCircle } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import { DashboardSettings } from '@/hooks/useDashboardSettings';
@@ -40,10 +40,16 @@ export const LocationWidget: React.FC<LocationWidgetProps> = ({ title = "Locatio
         .eq('user_id', user.id)
         .order('timestamp', { ascending: false })
         .limit(1)
-        .single();
+        .maybeSingle();
 
+      if (error) {
+        throw error;
+      }
+      
       if (data) {
         setCurrentLocation(data);
+      } else {
+        setCurrentLocation(null);
       }
     } catch (error) {
       console.error('Error loading location:', error);

@@ -1,65 +1,132 @@
-import { serve } from "https://deno.land/std@0.168.0/http/server.ts"
-import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
+import { corsHeaders } from '../_shared/cors.ts'
+import { createClient } from 'npm:@supabase/supabase-js@2'
 
-const corsHeaders = {
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
-}
+const supabaseUrl = Deno.env.get('SUPABASE_URL')!
+const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!
 
-serve(async (req) => {
+Deno.serve(async (req) => {
   if (req.method === 'OPTIONS') {
     return new Response('ok', { headers: corsHeaders })
   }
 
   try {
-    const { calendarId } = await req.json()
-    
-    if (!calendarId) {
+    const authHeader = req.headers.get('Authorization')
+    if (!authHeader) {
       return new Response(
-        JSON.stringify({ error: 'Calendar ID is required' }),
+        JSON.stringify({ error: 'Authorization header required' }),
         { 
-          status: 400, 
+          status: 401, 
           headers: { ...corsHeaders, 'Content-Type': 'application/json' } 
         }
       )
     }
 
-    const GOOGLE_CALENDAR_API_KEY = Deno.env.get('GOOGLE_CALENDAR_API_KEY')
+    // Create Supabase client with service role for user lookup
+    const supabase = createClient(supabaseUrl, supabaseServiceKey)
     
-    if (!GOOGLE_CALENDAR_API_KEY) {
+    // Get user from auth header
+    const token = authHeader.replace('Bearer ', '')
+    const { data: { user }, error: authError } = await supabase.auth.getUser(token)
+    
+    if (authError || !user) {
       return new Response(
-        JSON.stringify({ error: 'Google Calendar API key not configured' }),
+        JSON.stringify({ error: 'Invalid authentication' }),
         { 
-          status: 500, 
+          status: 401, 
           headers: { ...corsHeaders, 'Content-Type': 'application/json' } 
         }
       )
     }
 
-    // Get events for the next 30 days
+    // Get user's Google Calendar configuration
+    const { data: calendarConfig, error: configError } = await supabase
+      .from('google_calendar_configs')
+      .select('*')
+      .eq('user_id', user.id)
+      .single()
+
+    if (configError || !calendarConfig) {
+      return new Response(
+        JSON.stringify({ error: 'Google Calendar not configured. Please connect your Google Calendar in settings.' }),
+        { 
+          status: 404, 
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' } 
+        }
+      )
+    }
+
+    // Check if token needs refresh
+    const now = new Date()
+    const expiresAt = new Date(calendarConfig.expires_at)
+    
+    let accessToken = calendarConfig.access_token
+
+    if (now >= expiresAt) {
+      // Token expired, refresh it
+      const refreshResponse = await fetch(`${supabaseUrl}/functions/v1/google-oauth-refresh`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${supabaseServiceKey}`,
+        },
+        body: JSON.stringify({
+          refreshToken: calendarConfig.refresh_token
+        })
+      })
+
+      if (!refreshResponse.ok) {
+        return new Response(
+          JSON.stringify({ error: 'Failed to refresh Google Calendar access. Please reconnect your account.' }),
+          { 
+            status: 401, 
+            headers: { ...corsHeaders, 'Content-Type': 'application/json' } 
+          }
+        )
+      }
+
+      const refreshData = await refreshResponse.json()
+      accessToken = refreshData.access_token
+
+      // Update stored tokens
+      await supabase
+        .from('google_calendar_configs')
+        .update({
+          access_token: accessToken,
+          expires_at: new Date(now.getTime() + refreshData.expires_in * 1000).toISOString()
+        })
+        .eq('user_id', user.id)
+    }
+
+    // Fetch calendar events
     const timeMin = new Date().toISOString()
     const timeMax = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString()
     
-    const url = `https://www.googleapis.com/calendar/v3/calendars/${encodeURIComponent(calendarId)}/events?key=${GOOGLE_CALENDAR_API_KEY}&timeMin=${timeMin}&timeMax=${timeMax}&singleEvents=true&orderBy=startTime&maxResults=50`
-    
-    const response = await fetch(url)
-    
-    if (!response.ok) {
-      const error = await response.text()
+    const calendarResponse = await fetch(
+      `https://www.googleapis.com/calendar/v3/calendars/primary/events?timeMin=${timeMin}&timeMax=${timeMax}&singleEvents=true&orderBy=startTime&maxResults=50`,
+      {
+        headers: {
+          'Authorization': `Bearer ${accessToken}`,
+          'Content-Type': 'application/json',
+        }
+      }
+    )
+
+    if (!calendarResponse.ok) {
+      const error = await calendarResponse.text()
       console.error('Google Calendar API error:', error)
       return new Response(
         JSON.stringify({ error: 'Failed to fetch calendar events', details: error }),
         { 
-          status: response.status, 
+          status: calendarResponse.status, 
           headers: { ...corsHeaders, 'Content-Type': 'application/json' } 
         }
       )
     }
     
-    const data = await response.json()
+    const calendarData = await calendarResponse.json()
     
     // Transform events to our format
-    const events = data.items?.map((event: any) => ({
+    const events = calendarData.items?.map((event: any) => ({
       id: event.id,
       title: event.summary || 'Untitled Event',
       start: event.start?.dateTime || event.start?.date,
@@ -67,6 +134,7 @@ serve(async (req) => {
       location: event.location,
       description: event.description,
       color: getEventColor(event),
+      allDay: !event.start?.dateTime, // All-day if no time specified
     })) || []
 
     return new Response(
@@ -88,7 +156,6 @@ serve(async (req) => {
 })
 
 function getEventColor(event: any): string {
-  // Map Google Calendar colors to Tailwind classes
   const colorMap: { [key: string]: string } = {
     '1': 'bg-blue-500',
     '2': 'bg-green-500',

@@ -1,15 +1,13 @@
 import React, { useState } from 'react';
+import { useScreens } from '@/hooks/useScreens';
 import { DashboardControls } from './DashboardControls';
 import { LayoutBuilder } from './LayoutBuilder';
 import { DynamicDashboard } from './DynamicDashboard';
 import { VisualDashboard } from './VisualDashboard';
 import { ClockWidget, WeatherWidget, CalendarWidget, NewsWidget, PhotoWidget } from './widgets';
 
-interface DashboardProps {
-  screenId?: string;
-}
-
-export const Dashboard: React.FC<DashboardProps> = ({ screenId = 'default' }) => {
+export const Dashboard: React.FC = () => {
+  const { currentScreen } = useScreens();
   const [editMode, setEditMode] = useState(false);
   const [visualEditMode, setVisualEditMode] = useState(false);
   const [fullscreen, setFullscreen] = useState(false);
@@ -66,7 +64,8 @@ export const Dashboard: React.FC<DashboardProps> = ({ screenId = 'default' }) =>
         <div className={`${fullscreen ? 'p-4' : 'p-6'} transition-all duration-300`}>
           {editMode ? (
             <LayoutBuilder 
-              layout={defaultLayout}
+              layout={currentScreen?.layout_data || defaultLayout}
+              screenId={currentScreen?.id}
               onSave={(newLayout) => {
                 console.log('Save layout:', newLayout);
                 setEditMode(false);
@@ -74,7 +73,7 @@ export const Dashboard: React.FC<DashboardProps> = ({ screenId = 'default' }) =>
               onCancel={() => setEditMode(false)}
             />
           ) : (
-            <DynamicDashboard editMode={editMode} />
+            <DynamicDashboard editMode={editMode} screen={currentScreen} />
           )}
         </div>
       )}
