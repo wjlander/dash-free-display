@@ -67,6 +67,7 @@ export const GoogleCalendarWidget: React.FC<GoogleCalendarWidgetProps> = ({ titl
         }
       ]);
     }
+  }, [userSettings, googleCalendarConnected]);
 
   const loadUserSettings = async () => {
     try {
@@ -300,9 +301,9 @@ export const GoogleCalendarWidget: React.FC<GoogleCalendarWidgetProps> = ({ titl
           ) : (
             <div className="text-center py-2">
               <p className="text-sm text-muted-foreground mb-2">No events today</p>
-              {!googleCalendarConnected && (
+              {!userSettings?.google_calendar_enabled && (
                 <p className="text-xs text-muted-foreground">
-                  Connect Google Calendar in settings to sync real events
+                  Enable Google Calendar in settings to sync real events
                 </p>
               )}
             </div>
