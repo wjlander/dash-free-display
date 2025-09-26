@@ -6,6 +6,7 @@ import { format, startOfMonth, endOfMonth, eachDayOfInterval, isSameMonth, isSam
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import { useAuth } from '@/hooks/useAuth';
+import { useGoogleCalendar } from '@/hooks/useGoogleCalendar';
 
 interface GoogleCalendarWidgetProps {
   title?: string;
@@ -28,6 +29,7 @@ export const GoogleCalendarWidget: React.FC<GoogleCalendarWidgetProps> = ({ titl
   const [userSettings, setUserSettings] = useState<any>(null);
   const { user } = useAuth();
   const { toast } = useToast();
+  const { connected: googleCalendarConnected } = useGoogleCalendar();
 
   useEffect(() => {
     if (user) {
@@ -36,7 +38,7 @@ export const GoogleCalendarWidget: React.FC<GoogleCalendarWidgetProps> = ({ titl
   }, [user]);
 
   useEffect(() => {
-    if (userSettings?.google_calendar_enabled && userSettings?.google_calendar_id) {
+    if (userSettings?.google_calendar_enabled && userSettings?.google_calendar_id && googleCalendarConnected) {
       fetchCalendarEvents();
     } else {
       // Show demo events if not configured
@@ -65,7 +67,6 @@ export const GoogleCalendarWidget: React.FC<GoogleCalendarWidgetProps> = ({ titl
         }
       ]);
     }
-  }, [userSettings]);
 
   const loadUserSettings = async () => {
     try {

@@ -26,9 +26,15 @@ export const useGoogleCalendar = () => {
 
     try {
       await api.initializeConfig(user.id);
-      setConnected(true);
-      await loadCalendars();
-      await loadEvents();
+      
+      // Only proceed if configuration was successfully loaded
+      if (api.config) {
+        setConnected(true);
+        await loadCalendars();
+        await loadEvents();
+      } else {
+        setConnected(false);
+      }
     } catch (error) {
       console.error('Error loading Google Calendar config:', error);
       setConnected(false);
