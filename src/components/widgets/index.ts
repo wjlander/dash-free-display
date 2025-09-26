@@ -9,3 +9,4 @@ export { TodoWidget } from './TodoWidget';
 export { NotesWidget } from './NotesWidget';
 export { SystemStatsWidget } from './SystemStatsWidget';
 export { HomeAssistantWidget } from './HomeAssistantWidget';
+export { HomeAssistantWidget } from './HomeAssistantWidget';
