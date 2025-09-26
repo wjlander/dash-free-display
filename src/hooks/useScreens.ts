@@ -245,5 +245,3 @@ export const useScreens = () => {
     loadScreens
   };
 };
-
-export { useScreens }
