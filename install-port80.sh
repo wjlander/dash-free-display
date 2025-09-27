@@ -128,11 +128,150 @@ setup_application() {
     mkdir -p "$APP_DIR"
     cd "$APP_DIR"
     
-    # For demo purposes, we'll create the basic structure
-    # In production, you would clone from your git repository
-    log "Creating application structure..."
+    # Copy application files from current directory
+    log "Copying application files..."
     
-    # Create package.json
+    # Copy all source files from the current directory to the app directory
+    if [[ -f "$(dirname "$0")/package.json" ]]; then
+        cp -r "$(dirname "$0")"/* "$APP_DIR/" 2>/dev/null || true
+        log "Copied files from source directory"
+    else
+        log "Creating minimal application structure..."
+        
+        # Create directory structure
+        mkdir -p src/components src/hooks src/lib src/types src/pages src/integrations/supabase
+        mkdir -p public
+        
+        # Create index.html
+        cat > index.html << 'EOF'
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Custom Dashboard</title>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>
+EOF
+
+        # Create basic main.tsx
+        cat > src/main.tsx << 'EOF'
+import { createRoot } from "react-dom/client";
+import App from "./App.tsx";
+import "./index.css";
+
+createRoot(document.getElementById("root")!).render(<App />);
+EOF
+
+        # Create basic App.tsx
+        cat > src/App.tsx << 'EOF'
+import React from 'react';
+
+const App = () => {
+  return (
+    <div className="min-h-screen bg-gray-900 text-white flex items-center justify-center">
+      <div className="text-center">
+        <h1 className="text-4xl font-bold mb-4">Custom Dashboard</h1>
+        <p className="text-xl text-gray-300">Installation Complete</p>
+        <p className="text-sm text-gray-500 mt-4">
+          Configure your .env file and restart the service to begin
+        </p>
+      </div>
+    </div>
+  );
+};
+
+export default App;
+EOF
+
+        # Create basic index.css
+        cat > src/index.css << 'EOF'
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+EOF
+
+        # Create tailwind config
+        cat > tailwind.config.ts << 'EOF'
+import type { Config } from "tailwindcss";
+
+export default {
+  content: ["./index.html", "./src/**/*.{js,ts,jsx,tsx}"],
+  theme: {
+    extend: {},
+  },
+  plugins: [],
+} satisfies Config;
+EOF
+
+        # Create postcss config
+        cat > postcss.config.js << 'EOF'
+export default {
+  plugins: {
+    tailwindcss: {},
+    autoprefixer: {},
+  },
+};
+EOF
+
+        # Create tsconfig.json
+        cat > tsconfig.json << 'EOF'
+{
+  "compilerOptions": {
+    "target": "ES2020",
+    "useDefineForClassFields": true,
+    "lib": ["ES2020", "DOM", "DOM.Iterable"],
+    "module": "ESNext",
+    "skipLibCheck": true,
+    "moduleResolution": "bundler",
+    "allowImportingTsExtensions": true,
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "noEmit": true,
+    "jsx": "react-jsx",
+    "strict": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "noFallthroughCasesInSwitch": true,
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["./src/*"]
+    }
+  },
+  "include": ["src"],
+  "references": [{ "path": "./tsconfig.node.json" }]
+}
+EOF
+
+        # Create tsconfig.node.json
+        cat > tsconfig.node.json << 'EOF'
+{
+  "compilerOptions": {
+    "composite": true,
+    "skipLibCheck": true,
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "allowSyntheticDefaultImports": true
+  },
+  "include": ["vite.config.ts"]
+}
+EOF
+    fi
+    
+    # Ensure package.json exists with correct configuration
     cat > package.json << 'EOF'
 {
   "name": "custom-dashboard",
@@ -498,7 +637,7 @@ print_info() {
     echo -e "${GREEN}║                    INSTALLATION COMPLETE                     ║${NC}"
     echo -e "${GREEN}╚══════════════════════════════════════════════════════════════╝${NC}"
     echo
-    echo -e "${BLUE}Dashboard URL:${NC} http://$(hostname -I | awk '{print $1}'):80"
+    echo -e "${BLUE}Dashboard URL:${NC} http://$(hostname -I | awk '{print $1}'):8081"
     echo -e "${BLUE}Service Status:${NC} systemctl status $SERVICE_NAME"
     echo -e "${BLUE}Service Logs:${NC} journalctl -u $SERVICE_NAME -f"
     echo -e "${BLUE}PM2 Status:${NC} sudo -u $APP_USER pm2 status"
@@ -508,7 +647,7 @@ print_info() {
     echo "1. Edit configuration: nano $APP_DIR/.env"
     echo "2. Add your Supabase URL and API keys"
     echo "3. Restart service: systemctl restart $SERVICE_NAME"
-    echo "4. Access dashboard at: http://your-server-ip:80"
+    echo "4. Access dashboard at: http://your-server-ip:8081"
     echo
     echo -e "${YELLOW}MANAGEMENT COMMANDS:${NC}"
     echo "• Start:   systemctl start $SERVICE_NAME"
