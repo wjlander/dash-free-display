@@ -15,7 +15,7 @@ NC='\033[0m' # No Color
 # Configuration
 APP_NAME="custom-dashboard"
 APP_USER="dashboard"
-APP_DIR="/opt/custom-dashboard"
+APP_DIR="/tmp/custom-dashboard"
 SERVICE_NAME="custom-dashboard"
 PORT=80
 NODE_VERSION="20"

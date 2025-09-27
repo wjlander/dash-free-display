@@ -448,7 +448,7 @@ print_info() {
     echo -e "${GREEN}║                    INSTALLATION COMPLETE                     ║${NC}"
     echo -e "${GREEN}╚══════════════════════════════════════════════════════════════╝${NC}"
     echo
-    echo -e "${BLUE}Dashboard URL:${NC} http://$(hostname -I | awk '{print $1}'):8081"
+    echo -e "${BLUE}Dashboard URL:${NC} http://$(hostname -I | awk '{print $1}'):80"
     echo -e "${BLUE}Service Status:${NC} systemctl status $SERVICE_NAME"
     echo -e "${BLUE}Service Logs:${NC} journalctl -u $SERVICE_NAME -f"
     echo -e "${BLUE}PM2 Status:${NC} sudo -u $APP_USER pm2 status"
@@ -458,7 +458,7 @@ print_info() {
     echo "1. Edit configuration: nano $APP_DIR/.env"
     echo "2. Add your Supabase URL and API keys"
     echo "3. Restart service: systemctl restart $SERVICE_NAME"
-    echo "4. Access dashboard at: http://your-server-ip:8081"
+    echo "4. Access dashboard at: http://your-server-ip:80"
     echo
     echo -e "${YELLOW}MANAGEMENT COMMANDS:${NC}"
     echo "• Start:   systemctl start $SERVICE_NAME"
