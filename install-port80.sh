@@ -128,28 +128,21 @@ setup_application() {
     mkdir -p "$APP_DIR"
     cd "$APP_DIR"
     
-    # Copy application files from current directory
-    log "Copying application files..."
+    log "Creating application structure..."
     
-    # Copy all source files from the current directory to the app directory
-    if [[ -f "$(dirname "$0")/package.json" ]]; then
-        cp -r "$(dirname "$0")"/* "$APP_DIR/" 2>/dev/null || true
-        log "Copied files from source directory"
-    else
-        log "Creating minimal application structure..."
-        
-        # Create directory structure
-        mkdir -p src/components src/hooks src/lib src/types src/pages src/integrations/supabase
-        mkdir -p public
-        
-        # Create index.html
-        cat > index.html << 'EOF'
+    # Create directory structure
+    mkdir -p src/components/ui src/components/widgets src/hooks src/lib src/types src/pages src/integrations/supabase
+    mkdir -p public
+    
+    # Create index.html
+    cat > index.html << 'EOF'
 <!doctype html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Custom Dashboard</title>
+    <title>Custom Dashboard - Free DAKboard Alternative</title>
+    <meta name="description" content="A beautiful, free, and fully customizable digital dashboard alternative to DAKboard." />
   </head>
   <body>
     <div id="root"></div>
@@ -177,215 +170,33 @@ const App = () => {
       <div className="text-center">
         <h1 className="text-4xl font-bold mb-4">Custom Dashboard</h1>
         <p className="text-xl text-gray-300">Installation Complete</p>
-        <p className="text-sm text-gray-500 mt-4">
-          Configure your .env file and restart the service to begin
-        </p>
-      </div>
-    </div>
-  );
-};
-
-export default App;
-EOF
-
-        # Create basic index.css
-        cat > src/index.css << 'EOF'
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
-
-body {
-  margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-    sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-}
-EOF
-
-        # Create tailwind config
-        cat > tailwind.config.ts << 'EOF'
-import type { Config } from "tailwindcss";
-
-export default {
-  content: ["./index.html", "./src/**/*.{js,ts,jsx,tsx}"],
-  theme: {
-    extend: {},
-  },
-  plugins: [],
-} satisfies Config;
-EOF
-
-        # Create postcss config
-        cat > postcss.config.js << 'EOF'
-export default {
-  plugins: {
-    tailwindcss: {},
-    autoprefixer: {},
-  },
-};
-EOF
-
-        # Create tsconfig.json
-        cat > tsconfig.json << 'EOF'
-{
-  "compilerOptions": {
-    "target": "ES2020",
-    "useDefineForClassFields": true,
-    "lib": ["ES2020", "DOM", "DOM.Iterable"],
-    "module": "ESNext",
-    "skipLibCheck": true,
-    "moduleResolution": "bundler",
-    "allowImportingTsExtensions": true,
-    "resolveJsonModule": true,
-    "isolatedModules": true,
-    "noEmit": true,
-    "jsx": "react-jsx",
-    "strict": true,
-    "noUnusedLocals": true,
-    "noUnusedParameters": true,
-    "noFallthroughCasesInSwitch": true,
-    "baseUrl": ".",
-    "paths": {
-      "@/*": ["./src/*"]
-    }
-  },
-  "include": ["src"],
-  "references": [{ "path": "./tsconfig.node.json" }]
-}
-EOF
-
-        # Create tsconfig.node.json
-        cat > tsconfig.node.json << 'EOF'
-{
-  "compilerOptions": {
-    "composite": true,
-    "skipLibCheck": true,
-    "module": "ESNext",
-    "moduleResolution": "bundler",
-    "allowSyntheticDefaultImports": true
-  },
-  "include": ["vite.config.ts"]
-}
-EOF
+    # Install git if not present
+    apt-get install -y git
+    
+    # Remove existing directory if it exists
+    if [[ -d "$APP_DIR" ]]; then
+        log "Removing existing application directory..."
+        rm -rf "$APP_DIR"
     fi
     
-    # Ensure package.json exists with correct configuration
-    cat > package.json << 'EOF'
-{
-  "name": "custom-dashboard",
-  "version": "1.0.0",
-  "type": "module",
-  "scripts": {
-    "dev": "vite --host 0.0.0.0 --port 80",
-    "build": "vite build",
-    "preview": "vite preview --host 0.0.0.0 --port 80",
-    "start": "vite preview --host 0.0.0.0 --port 80"
-  },
-  "dependencies": {
-    "@hookform/resolvers": "^3.10.0",
-    "@radix-ui/react-accordion": "^1.2.11",
-    "@radix-ui/react-alert-dialog": "^1.1.14",
-    "@radix-ui/react-aspect-ratio": "^1.1.7",
-    "@radix-ui/react-avatar": "^1.1.10",
-    "@radix-ui/react-checkbox": "^1.3.2",
-    "@radix-ui/react-collapsible": "^1.1.11",
-    "@radix-ui/react-context-menu": "^2.2.15",
-    "@radix-ui/react-dialog": "^1.1.14",
-    "@radix-ui/react-dropdown-menu": "^2.1.15",
-    "@radix-ui/react-hover-card": "^1.1.14",
-    "@radix-ui/react-label": "^2.1.7",
-    "@radix-ui/react-menubar": "^1.1.15",
-    "@radix-ui/react-navigation-menu": "^1.2.13",
-    "@radix-ui/react-popover": "^1.1.14",
-    "@radix-ui/react-progress": "^1.1.7",
-    "@radix-ui/react-radio-group": "^1.3.7",
-    "@radix-ui/react-scroll-area": "^1.2.9",
-    "@radix-ui/react-select": "^2.2.5",
-    "@radix-ui/react-separator": "^1.1.7",
-    "@radix-ui/react-slider": "^1.3.5",
-    "@radix-ui/react-slot": "^1.2.3",
-    "@radix-ui/react-switch": "^1.2.5",
-    "@radix-ui/react-tabs": "^1.1.12",
-    "@radix-ui/react-toast": "^1.2.14",
-    "@radix-ui/react-toggle": "^1.1.9",
-    "@radix-ui/react-toggle-group": "^1.1.10",
-    "@radix-ui/react-tooltip": "^1.2.7",
-    "@supabase/supabase-js": "^2.57.4",
-    "@tanstack/react-query": "^5.83.0",
-    "@types/google.accounts": "^0.0.18",
-    "class-variance-authority": "^0.7.1",
-    "clsx": "^2.1.1",
-    "cmdk": "^1.1.1",
-    "date-fns": "^3.6.0",
-    "embla-carousel-react": "^8.6.0",
-    "input-otp": "^1.4.2",
-    "lucide-react": "^0.462.0",
-    "next-themes": "^0.3.0",
-    "react": "^18.3.1",
-    "react-day-picker": "^8.10.1",
-    "react-dom": "^18.3.1",
-    "react-hook-form": "^7.61.1",
-    "react-resizable-panels": "^2.1.9",
-    "react-router-dom": "^6.30.1",
-    "recharts": "^2.15.4",
-    "sonner": "^1.7.4",
-    "tailwind-merge": "^2.6.0",
-    "tailwindcss-animate": "^1.0.7",
-    "vaul": "^0.9.9",
-    "zod": "^3.25.76"
-  },
-  "devDependencies": {
-    "@eslint/js": "^9.32.0",
-    "@tailwindcss/typography": "^0.5.16",
-    "@types/node": "^22.16.5",
-    "@types/react": "^18.3.23",
-    "@types/react-dom": "^18.3.7",
-    "@vitejs/plugin-react-swc": "^3.11.0",
-    "autoprefixer": "^10.4.21",
-    "eslint": "^9.32.0",
-    "eslint-plugin-react-hooks": "^5.2.0",
-    "eslint-plugin-react-refresh": "^0.4.20",
-    "globals": "^15.15.0",
-    "lovable-tagger": "^1.1.9",
-    "postcss": "^8.5.6",
-    "tailwindcss": "^3.4.17",
-    "typescript": "^5.8.3",
-    "typescript-eslint": "^8.38.0",
-    "vite": "^5.4.19"
-  }
-}
-EOF
+    # Clone the repository
+    log "Cloning application from GitHub..."
+    git clone https://github.com/wjlander/dash-free-display.git "$APP_DIR"
     
-    # Create basic vite config for production
-    cat > vite.config.ts << 'EOF'
-import { defineConfig } from "vite";
-import react from "@vitejs/plugin-react-swc";
-import path from "path";
-
-export default defineConfig({
-  server: {
-    host: "0.0.0.0",
-    port: 80,
-  },
-  preview: {
-    host: "0.0.0.0",
-    port: 80,
-  },
-  plugins: [react()],
-  resolve: {
-    alias: {
-      "@": path.resolve(__dirname, "./src"),
-    },
-  },
-  build: {
-    outDir: "dist",
-    sourcemap: false,
-    minify: true,
-  },
-});
-EOF
+    cd "$APP_DIR"
+    
+    # Update vite config to use correct port
+    if [[ -f "vite.config.ts" ]]; then
+        sed -i 's/port: 8080/port: 80/g' vite.config.ts
+        log "Updated vite config for port 80"
+    fi
+    
+    # Update package.json scripts for port 80
+    if [[ -f "package.json" ]]; then
+        sed -i 's/"dev": "vite"/"dev": "vite --host 0.0.0.0 --port 80"/g' package.json
+        sed -i 's/"preview": "vite preview"/"preview": "vite preview --host 0.0.0.0 --port 80"/g' package.json
+        log "Updated package.json scripts for port 80"
+    fi
     
     # Set ownership
     chown -R "$APP_USER:$APP_USER" "$APP_DIR"
