@@ -15,7 +15,7 @@ NC='\033[0m' # No Color
 # Configuration
 APP_NAME="custom-dashboard"
 APP_USER="dashboard"
-APP_DIR="/opt/custom-dashboard"
+APP_DIR="/tmp/custom-dashboard"
 SERVICE_NAME="custom-dashboard"
 PORT=80
 NODE_VERSION="20"
@@ -264,7 +264,7 @@ module.exports = {
     name: 'custom-dashboard',
     script: 'npm',
     args: 'start',
-    cwd: '/opt/custom-dashboard',
+    cwd: '/tmp/custom-dashboard',
     instances: 1,
     autorestart: true,
     watch: false,
